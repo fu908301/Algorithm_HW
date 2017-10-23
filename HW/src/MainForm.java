@@ -19,7 +19,7 @@ public class MainForm extends JFrame{
     public MainForm(){
         super("TEST");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBounds(800, 800, 800, 800);
+        setBounds(600, 600, 600, 600);
         getContentPane().add(panel);
         addMouseListener(m);
         setVisible(true);
@@ -29,8 +29,33 @@ public class MainForm extends JFrame{
                 center = center(points.get(0), points.get(1), points.get(2));
                 mid_points = mid(points);
                 draw_line(center,mid_points);
+                length(center,mid_points.get(0));
+                length(center,mid_points.get(1));
+                length(center,mid_points.get(2));
             }
         });
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel.repaint();
+                points.clear();
+                mid_points.clear();
+            }
+        });
+    }
+
+    private void length(Point p1, Point p2){
+        double disx,disy,finalx = p2.x,finaly = p2.y;
+        disx = p2.x - p1.x;
+        disy = p2.y - p1.y;
+        while(true){
+            if(finalx >= 600 || finaly >=600 || finalx <= 0 || finaly <= 0)
+                break;
+            finalx += disx;
+            finaly += disy;
+        }
+        Point finalp = new Point(finalx, finaly);
+        draw_line(p2,finalp);
     }
 
     private MouseListener  m = new MouseListener(){
@@ -94,6 +119,10 @@ public class MainForm extends JFrame{
         for(int i = 0; i < input.size(); i++) {
             g2d.drawLine((int) center.x, (int) center.y, (int) input.get(i).x, (int) input.get(i).y);
         }
+    }
+    private void draw_line(Point p1,Point p2){
+        Graphics2D g2d = (Graphics2D) panel.getGraphics();
+        g2d.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
     }
 
     public static void main(String args[]){
