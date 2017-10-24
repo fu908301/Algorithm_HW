@@ -13,9 +13,9 @@ public class MainForm extends JFrame{
     private JButton button2;
     private ArrayList<Point> points = new ArrayList<Point>();
     private ArrayList<Point> mid_points = new ArrayList<Point>();
-    double x,y;
-    Point center;
-
+    private double x,y;
+    private Point center;
+    private int times = 0;
     public MainForm(){
         super("TEST");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -26,12 +26,12 @@ public class MainForm extends JFrame{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                center = center(points.get(0), points.get(1), points.get(2));
-                mid_points = mid(points);
-                draw_line(center,mid_points);
-                length(center,mid_points.get(0));
-                length(center,mid_points.get(1));
-                length(center,mid_points.get(2));
+                if(times == 2){
+                    two_way();
+                }
+                else if(times == 3){
+                    three_way();
+                }
             }
         });
         button2.addActionListener(new ActionListener() {
@@ -40,10 +40,21 @@ public class MainForm extends JFrame{
                 panel.repaint();
                 points.clear();
                 mid_points.clear();
+                times = 0;
             }
         });
     }
+    private void two_way(){
 
+    }
+    private void three_way(){
+        center = center(points.get(0), points.get(1), points.get(2));
+        mid_points = mid(points);
+        draw_line(center,mid_points);
+        length(center,mid_points.get(0));
+        length(center,mid_points.get(1));
+        length(center,mid_points.get(2));
+    }
     private void length(Point p1, Point p2){
         double disx,disy,finalx = p2.x,finaly = p2.y;
         disx = p2.x - p1.x;
@@ -68,6 +79,7 @@ public class MainForm extends JFrame{
             Shape s = new Ellipse2D.Double(x, y, 10,10);
             g2d.fill(s);
             System.out.println(x + " " + y );
+            times++;
         }
         public void mouseReleased(MouseEvent e){}
         public void mouseEntered(MouseEvent e){}
