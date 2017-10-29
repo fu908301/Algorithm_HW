@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
+import java.io.*;
 import java.util.ArrayList;
 import  java.math.*;
 
@@ -15,11 +16,16 @@ public class MainForm extends JFrame{
     private JButton setButton;
     private JTextField textField1;
     private JTextField textField2;
+    private JButton LOADButton;
+    private JButton NEXTTESTButton;
+    private JButton SAVEButton;
     private ArrayList<Point> points = new ArrayList<Point>();
     private ArrayList<Point> mid_points = new ArrayList<Point>();
     private double x,y;
     private Point center;
     private int times = 0;
+    private File Load_F;
+    private BufferedReader br;
     public MainForm(){
         super("TEST");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -44,7 +50,7 @@ public class MainForm extends JFrame{
                         three_way_2();
                     }
                     else if(which_T(points) == 2){
-
+                        special_T();
                     }
                 }
             }
@@ -72,41 +78,123 @@ public class MainForm extends JFrame{
                 times++;
             }
         });
+
+        LOADButton.addActionListener(new ActionListener(){
+            String Line;
+            String[] tempArray= new String[2];
+            @Override
+            public void actionPerformed(ActionEvent e){
+                JFileChooser fc = new JFileChooser();
+                int returnValue = fc.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION){
+                    Load_F = fc.getSelectedFile();
+                    try{
+                        FileReader fr = new FileReader(Load_F);
+                        br = new BufferedReader(fr);
+                        while((Line = br.readLine())!= null){
+                            if(!Line.contains("#") && Line.length() > 0){
+                                System.out.println(Line);
+                                times = Integer.parseInt(Line);
+                                for(int i = 0; i < times; i++){
+                                    Line = br.readLine();
+                                    tempArray = Line.split("\\s");
+                                    x = Double.parseDouble(tempArray[0]);
+                                    y = Double.parseDouble(tempArray[1]);
+                                    Point p = new Point(x, y);
+                                    points.add(p);
+                                    Graphics2D g2d = (Graphics2D) panel.getGraphics();
+                                    Shape s = new Ellipse2D.Double(x, y, 10,10);
+                                    g2d.fill(s);
+                                    System.out.println(x + " " + y );
+                                }
+                                break;
+                            }
+                        }
+                    }catch(FileNotFoundException FNF){
+                        FNF.getStackTrace();
+                    }catch(IOException IOE){
+                        IOE.fillInStackTrace();
+                    }
+
+                }
+            }
+        });
+        NEXTTESTButton.addActionListener(new ActionListener(){
+            String Line;
+            String[] tempArray= new String[2];
+            @Override
+            public void actionPerformed(ActionEvent e){
+                try{
+                    while((Line = br.readLine())!= null){
+                        if(!Line.contains("#")){
+                            times = Integer.parseInt(Line);
+                            for(int i = 0; i < times; i++){
+                                Line = br.readLine();
+                                tempArray = Line.split("\\s");
+                                x = Double.parseDouble(tempArray[0]);
+                                y = Double.parseDouble(tempArray[1]);
+                                Point p = new Point(x, y);
+                                points.add(p);
+                                Graphics2D g2d = (Graphics2D) panel.getGraphics();
+                                Shape s = new Ellipse2D.Double(x, y, 10,10);
+                                g2d.fill(s);
+                                System.out.println(x + " " + y );
+                            }
+                            break;
+                        }
+                    }
+                }catch(IOException IOE){
+                    IOE.fillInStackTrace();
+                }
+
+            }
+        });
     }
     private void two_way(){
         Point p0 = points.get(0), p1 = points.get(1),pmid = new Point(),p2 = new Point(),p3 = new Point() ,p4 = new Point(),p5 = new Point();
-        pmid.x = (p0.x + p1.x) / 2;
-        pmid.y = (p0.y + p1.y) / 2;
-        p2.x = 600;
-        p2.y = pmid.y - (p0.x - p1.x) * (600 - pmid.x) / (p0.y - p1.y);
-        p3.x = 0;
-        p3.y = pmid.y - (p0.x - p1.x) * (0 - pmid.x) / (p0.y - p1.y);
-        p4.x = pmid.x - (p0.y - p1.y) * (600 - pmid.y) / (p0.x - p1.x);
-        p4.y = 600;
-        p5.x = pmid.x - (p0.y - p1.y) * (0 - pmid.y) / (p0.x - p1.x);
-        p5.y = 0;
-        draw_line(pmid,p2);
-        draw_line(pmid,p3);
-        draw_line(pmid,p4);
-        draw_line(pmid,p5);
+        if(p0.x == p1.x && p0.y == p1.y){
+            System.out.println("The same point.");
+        }
+        else{
+            pmid.x = (p0.x + p1.x) / 2;
+            pmid.y = (p0.y + p1.y) / 2;
+            p2.x = 600;
+            p2.y = pmid.y - (p0.x - p1.x) * (600 - pmid.x) / (p0.y - p1.y);
+            p3.x = 0;
+            p3.y = pmid.y - (p0.x - p1.x) * (0 - pmid.x) / (p0.y - p1.y);
+            p4.x = pmid.x - (p0.y - p1.y) * (600 - pmid.y) / (p0.x - p1.x);
+            p4.y = 600;
+            p5.x = pmid.x - (p0.y - p1.y) * (0 - pmid.y) / (p0.x - p1.x);
+            p5.y = 0;
+            draw_line(pmid,p2);
+            draw_line(pmid,p3);
+            draw_line(pmid,p4);
+            draw_line(pmid,p5);
+        }
     }
 
     private void two_way(Point input0,Point input1){
         Point p0 = input0, p1 = input1,pmid = new Point(),p2 = new Point(),p3 = new Point() ,p4 = new Point(),p5 = new Point();
-        pmid.x = (p0.x + p1.x) / 2;
-        pmid.y = (p0.y + p1.y) / 2;
-        p2.x = 600;
-        p2.y = pmid.y - (p0.x - p1.x) * (600 - pmid.x) / (p0.y - p1.y);
-        p3.x = 0;
-        p3.y = pmid.y - (p0.x - p1.x) * (0 - pmid.x) / (p0.y - p1.y);
-        p4.x = pmid.x - (p0.y - p1.y) * (600 - pmid.y) / (p0.x - p1.x);
-        p4.y = 600;
-        p5.x = pmid.x - (p0.y - p1.y) * (0 - pmid.y) / (p0.x - p1.x);
-        p5.y = 0;
-        draw_line(pmid,p2);
-        draw_line(pmid,p3);
-        draw_line(pmid,p4);
-        draw_line(pmid,p5);
+        if(p0.x == p1.x && p0.y == p1.y){
+            System.out.println("The same point!");
+        }
+        else {
+            pmid.x = (p0.x + p1.x) / 2;
+            pmid.y = (p0.y + p1.y) / 2;
+            p2.x = 600;
+            p2.y = pmid.y - (p0.x - p1.x) * (600 - pmid.x) / (p0.y - p1.y);
+            p3.x = 0;
+            p3.y = pmid.y - (p0.x - p1.x) * (0 - pmid.x) / (p0.y - p1.y);
+            p4.x = pmid.x - (p0.y - p1.y) * (600 - pmid.y) / (p0.x - p1.x);
+            p4.y = 600;
+            p5.x = pmid.x - (p0.y - p1.y) * (0 - pmid.y) / (p0.x - p1.x);
+            p5.y = 0;
+            draw_line(pmid, p2);
+            draw_line(pmid, p3);
+            draw_line(pmid, p4);
+            draw_line(pmid, p5);
+            System.out.println("");
+        }
     }
 
     private void three_way(){
@@ -177,7 +265,74 @@ public class MainForm extends JFrame{
     }
 
     private void special_T(){
-
+        Point P = new Point();
+        Point p0 = new Point(),p1 = new Point(),p2 = new Point(),p3 = new Point() ,p4 = new Point(),p5 = new Point(),mid_p1 = new Point(),mid_p2 = new Point();
+        double tempx,tempy;
+        if((points.get(0).x - points.get(1).x) / (points.get(0).y - points.get(1).y) * (points.get(0).x - points.get(2).x) / (points.get(0).y - points.get(2).y) == -1 || (p0.x - p1.x == 0 && p0.y - p2.y == 0) || (p0.x - p2.x == 0 && p0.y - p1.y == 0)) {
+            P = new Point(points.get(0).x, points.get(0).y);
+            p0 = new Point(points.get(1).x, points.get(1).y);
+            p1 = new Point(points.get(2).x, points.get(2).y);
+        }
+        else if((points.get(1).x - points.get(0).x) / (points.get(1).y - points.get(0).y) * (points.get(1).x - points.get(2).x) / (points.get(1).y - points.get(2).y) == -1 || (p1.x - p0.x == 0 && p1.y - p2.y == 0) || (p1.x - p2.x == 0 && p1.y - p0.y == 0)) {
+            P = new Point(points.get(1).x, points.get(1).y);
+            p0 = new Point(points.get(0).x, points.get(0).y);
+            p1 = new Point(points.get(2).x, points.get(2).y);
+        }
+        else if((points.get(2).x - points.get(0).x) / (points.get(2).y - points.get(0).y) * (points.get(2).x - points.get(1).x) / (points.get(2).y - points.get(1).y) == -1 || (p2.x - p1.x == 0 && p2.y - p0.y == 0) || (p2.x - p0.x == 0 && p2.y - p1.y == 0)) {
+            P = new Point(points.get(2).x, points.get(2).y);
+            p0 = new Point(points.get(0).x, points.get(0).y);
+            p1 = new Point(points.get(1).x, points.get(1).y);
+        }
+        center = center(points.get(0), points.get(1), points.get(2));
+        mid_points = mid(points);
+        if(mid_points.get(0).x == center.x && mid_points.get(0).y == center.y) {
+            mid_p1.x = mid_points.get(1).x;
+            mid_p1.y = mid_points.get(1).y;
+            mid_p2.x = mid_points.get(2).x;
+            mid_p2.y = mid_points.get(2).y;
+        }
+        else if(mid_points.get(1).x == center.x && mid_points.get(1).y == center.y) {
+            mid_p1.x = mid_points.get(0).x;
+            mid_p1.y = mid_points.get(0).y;
+            mid_p2.x = mid_points.get(2).x;
+            mid_p2.y = mid_points.get(2).y;
+        }
+        else if(mid_points.get(2).x == center.x && mid_points.get(2).y == center.y) {
+            mid_p1.x = mid_points.get(0).x;
+            mid_p1.y = mid_points.get(0).y;
+            mid_p2.x = mid_points.get(1).x;
+            mid_p2.y = mid_points.get(1).y;
+        }
+        tempx = center.x - P.x;
+        tempy = center.y - P.y;
+        p2.x = 600;
+        p2.y = center.y + (p0.x - p1.x) * (center.x -600) / (p0.y - p1.y);
+        p3.x = 0;
+        p3.y = center.y + (p0.x - p1.x) * (center.x -0) / (p0.y - p1.y);
+        p4.x = center.x + (p0.y - p1.y) * (center.y - 600) / (p0.x - p1.x);
+        p4.y = 600;
+        p5.x = center.x + (p0.y - p1.y) * (center.y - 0) / (p0.x - p1.x);
+        p5.y = 0;
+        System.out.println(p2.x + " " + p2.y);
+        System.out.println(p3.x + " " + p3.y);
+        System.out.println(p4.x + " " + p4.y);
+        System.out.println(p5.x + " " + p5.y);
+        if(tempx * (p2.x - center.x)> 0 && tempy * (p2.y - center.y) > 0){
+            draw_line(center,p2);
+        }
+        else if(tempx * (p3.x - center.x)> 0 && tempy * (p3.y - center.y) > 0){
+            draw_line(center,p3);
+        }
+        else if(tempx * (p4.x - center.x)> 0 && tempy * (p4.y - center.y) > 0){
+            draw_line(center,p4);
+        }
+        else if(tempx * (p5.x - center.x)> 0 && tempy * (p5.y - center.y) > 0){
+            draw_line(center,p5);
+        }
+        draw_line(mid_p1,center);
+        draw_line(mid_p2,center);
+        length(center,mid_p1);
+        length(center,mid_p2);
     }
     private int which_T(ArrayList<Point> input){
         Line l1,l2,l3;
