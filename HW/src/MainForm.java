@@ -33,6 +33,7 @@ public class MainForm extends JFrame{
         getContentPane().add(panel);
         addMouseListener(m);
         setVisible(true);
+        Point A = new Point(),B = new Point(),C = new Point();
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,17 +41,27 @@ public class MainForm extends JFrame{
                     two_way();
                 }
                 else if(times == 3){
-                    if(which_T(points) == -2) {
+                    if(points.get(0).x == points.get(1).x && points.get(0).y == points.get(1).y && points.get(0).x == points.get(2).x && points.get(0).y == points.get(2).y){}
+                    else if(which_T(points) == 0) {
                         same_line();
                     }
-                    if(which_T(points) == 0) {
-                        three_way();
+                    else if(which_T(points) > 0){
+                        A.x = points.get(0).x;
+                        A.y = points.get(0).y;
+                        B.x = points.get(2).x;
+                        B.y = points.get(2).y;
+                        C.x = points.get(1).x;
+                        C.y = points.get(1).y;
+                        three_way(A,B,C);
                     }
-                    else if(which_T(points) == 1){
-                        three_way_2();
-                    }
-                    else if(which_T(points) == 2){
-                        special_T();
+                    else if(which_T(points) < 0){
+                        A.x = points.get(0).x;
+                        A.y = points.get(0).y;
+                        B.x = points.get(1).x;
+                        B.y = points.get(1).y;
+                        C.x = points.get(2).x;
+                        C.y = points.get(2).y;
+                        three_way(A,B,C);
                     }
                 }
             }
@@ -197,47 +208,21 @@ public class MainForm extends JFrame{
         }
     }
 
-    private void three_way(){
-        center = center(points.get(0), points.get(1), points.get(2));
-        mid_points = mid(points);
-        draw_line(center,mid_points);
-        length(center,mid_points.get(0));
-        length(center,mid_points.get(1));
-        length(center,mid_points.get(2));
-    }
-
-    private void three_way_2(){
-        center = center(points.get(0), points.get(1), points.get(2));
-        mid_points = mid(points);
-        Line l0 = new Line(center,mid_points.get(0));
-        Line l1 = new Line(center,mid_points.get(1));
-        Line l2 = new Line(center,mid_points.get(2));
-        Line shorest = new Line(),other1 = new Line(),other2 = new Line();
-        if(l0.length() < l1.length() && l0.length() < l2.length()){
-            shorest = new Line(l0);
-            other1 = new Line(l1);
-            other2 = new Line(l2);
-        }
-        else if(l1.length() < l0.length() && l1.length() < l2.length()){
-            shorest = new Line(l1);
-            other1 = new Line(l0);
-            other2 = new Line(l2);
-        }
-        else if(l2.length() < l1.length() && l2.length() < l0.length()){
-            shorest = new Line(l2);
-            other1 = new Line(l0);
-            other2 = new Line(l1);
-        }
-        draw_line(other1.a,other1.b);
-        length(other1.a,other1.b);
-        draw_line(other2.a,other2.b);
-        length(other2.a,other2.b);
-        double x,y;
-        x = 2 * shorest.a.x - shorest.b.x;
-        y = 2 * shorest.a.y - shorest.b.y;
-        Point temp = new Point(x,y);
-        draw_line(shorest.a, temp);
-        length(shorest.a, temp);
+    private void three_way(Point A, Point B, Point C) {
+        Point BA,CB,AC,P1,P2,P3;
+        center = center(A,B,C);
+        BA = new Point(B.x - A.x, B.y - A.y);
+        CB = new Point(C.x - B.x, C.y - B.y);
+        AC = new Point(A.x - C.x, A.y - C.y);
+        P1 = new Point(center.x + -1*(BA.y), center.y + BA.x);
+        P2 = new Point(center.x + -1*(CB.y), center.y + CB.x);
+        P3 = new Point(center.x + -1*(AC.y), center.y + AC.x);
+        draw_line(center,P1);
+        draw_line(center,P2);
+        draw_line(center,P3);
+        length(center,P1);
+        length(center,P2);
+        length(center,P3);
     }
 
     private void same_line(){
@@ -264,106 +249,12 @@ public class MainForm extends JFrame{
         two_way(other2.a,other2.b);
     }
 
-    private void special_T(){
-        Point P = new Point();
-        Point p0 = new Point(),p1 = new Point(),p2 = new Point(),p3 = new Point() ,p4 = new Point(),p5 = new Point(),mid_p1 = new Point(),mid_p2 = new Point();
-        double tempx,tempy;
-        if((points.get(0).x - points.get(1).x) / (points.get(0).y - points.get(1).y) * (points.get(0).x - points.get(2).x) / (points.get(0).y - points.get(2).y) == -1 || (p0.x - p1.x == 0 && p0.y - p2.y == 0) || (p0.x - p2.x == 0 && p0.y - p1.y == 0)) {
-            P = new Point(points.get(0).x, points.get(0).y);
-            p0 = new Point(points.get(1).x, points.get(1).y);
-            p1 = new Point(points.get(2).x, points.get(2).y);
-        }
-        else if((points.get(1).x - points.get(0).x) / (points.get(1).y - points.get(0).y) * (points.get(1).x - points.get(2).x) / (points.get(1).y - points.get(2).y) == -1 || (p1.x - p0.x == 0 && p1.y - p2.y == 0) || (p1.x - p2.x == 0 && p1.y - p0.y == 0)) {
-            P = new Point(points.get(1).x, points.get(1).y);
-            p0 = new Point(points.get(0).x, points.get(0).y);
-            p1 = new Point(points.get(2).x, points.get(2).y);
-        }
-        else if((points.get(2).x - points.get(0).x) / (points.get(2).y - points.get(0).y) * (points.get(2).x - points.get(1).x) / (points.get(2).y - points.get(1).y) == -1 || (p2.x - p1.x == 0 && p2.y - p0.y == 0) || (p2.x - p0.x == 0 && p2.y - p1.y == 0)) {
-            P = new Point(points.get(2).x, points.get(2).y);
-            p0 = new Point(points.get(0).x, points.get(0).y);
-            p1 = new Point(points.get(1).x, points.get(1).y);
-        }
-        center = center(points.get(0), points.get(1), points.get(2));
-        mid_points = mid(points);
-        if(mid_points.get(0).x == center.x && mid_points.get(0).y == center.y) {
-            mid_p1.x = mid_points.get(1).x;
-            mid_p1.y = mid_points.get(1).y;
-            mid_p2.x = mid_points.get(2).x;
-            mid_p2.y = mid_points.get(2).y;
-        }
-        else if(mid_points.get(1).x == center.x && mid_points.get(1).y == center.y) {
-            mid_p1.x = mid_points.get(0).x;
-            mid_p1.y = mid_points.get(0).y;
-            mid_p2.x = mid_points.get(2).x;
-            mid_p2.y = mid_points.get(2).y;
-        }
-        else if(mid_points.get(2).x == center.x && mid_points.get(2).y == center.y) {
-            mid_p1.x = mid_points.get(0).x;
-            mid_p1.y = mid_points.get(0).y;
-            mid_p2.x = mid_points.get(1).x;
-            mid_p2.y = mid_points.get(1).y;
-        }
-        tempx = center.x - P.x;
-        tempy = center.y - P.y;
-        p2.x = 600;
-        p2.y = center.y + (p0.x - p1.x) * (center.x -600) / (p0.y - p1.y);
-        p3.x = 0;
-        p3.y = center.y + (p0.x - p1.x) * (center.x -0) / (p0.y - p1.y);
-        p4.x = center.x + (p0.y - p1.y) * (center.y - 600) / (p0.x - p1.x);
-        p4.y = 600;
-        p5.x = center.x + (p0.y - p1.y) * (center.y - 0) / (p0.x - p1.x);
-        p5.y = 0;
-        System.out.println(p2.x + " " + p2.y);
-        System.out.println(p3.x + " " + p3.y);
-        System.out.println(p4.x + " " + p4.y);
-        System.out.println(p5.x + " " + p5.y);
-        if(tempx * (p2.x - center.x)> 0 && tempy * (p2.y - center.y) > 0){
-            draw_line(center,p2);
-        }
-        else if(tempx * (p3.x - center.x)> 0 && tempy * (p3.y - center.y) > 0){
-            draw_line(center,p3);
-        }
-        else if(tempx * (p4.x - center.x)> 0 && tempy * (p4.y - center.y) > 0){
-            draw_line(center,p4);
-        }
-        else if(tempx * (p5.x - center.x)> 0 && tempy * (p5.y - center.y) > 0){
-            draw_line(center,p5);
-        }
-        draw_line(mid_p1,center);
-        draw_line(mid_p2,center);
-        length(center,mid_p1);
-        length(center,mid_p2);
-    }
-    private int which_T(ArrayList<Point> input){
-        Line l1,l2,l3;
-        int _return = -1;
-        double le1,le2,le3,temp;
-        l1 = new Line(input.get(0),input.get(1));
-        l2 = new Line(input.get(0),input.get(2));
-        l3 = new Line(input.get(1),input.get(2));
-        le1 = l1.length();
-        le2 = l2.length();
-        le3 = l3.length();
-        if(le1 < le2){
-            temp = le1;
-            le1 = le2;
-            le2 = temp;
-        }
-        if(le1 < le3){
-            temp = le1;
-            le1 = le3;
-            le3 = temp;
-        }
-        if((input.get(0).x - input.get(1).x) / (input.get(0).y - input.get(1).y) == (input.get(1).x - input.get(2).x) / (input.get(1).y - input.get(2).y))
-            _return = -2;
-        else if(Math.pow(le2,2) + Math.pow(le3,2) > Math.pow(le1,2))
-            _return = 0;
-        else if(Math.pow(le2,2) + Math.pow(le3,2) < Math.pow(le1,2))
-            _return = 1;
-        else if(Math.pow(le2,2) + Math.pow(le3,2) == Math.pow(le1,2))
-            _return = 2;
+    private double which_T(ArrayList<Point> input){
+        double _return;
+        _return = (input.get(1).x - input.get(0).x) * (input.get(2).y - input.get(0).y) - (input.get(2).x - input.get(0).x) * (input.get(1).y - input.get(0).y);
         return _return;
     }
+
     private void length(Point p1, Point p2){
         double disx,disy,finalx = p2.x,finaly = p2.y;
         disx = p2.x - p1.x;
@@ -417,30 +308,7 @@ public class MainForm extends JFrame{
         return intersection(u,v);
     }
 
-    private ArrayList<Point> mid(ArrayList<Point> input){
-        Point temp;
-        double tempx,tempy;
-        ArrayList<Point> mid_p = new ArrayList<Point>();
-        for(int i = 0; i < input.size() - 1; i++){
-            for(int j = i + 1; j < input.size(); j++){
-                tempx = (input.get(i).x + input.get(j).x) / 2;
-                tempy = (input.get(i).y + input.get(j).y) / 2;
-                temp = new Point(tempx,tempy);
-                mid_p.add(temp);
-            }
-        }
-        for(int i = 0; i < mid_p.size(); i++)
-            System.out.println(mid_p.get(i).x + " " + mid_p.get(i).y);
-        return mid_p;
-    }
 
-    private void draw_line(Point center,ArrayList<Point> input){
-        Graphics2D g2d = (Graphics2D) panel.getGraphics();
-        System.out.println("Mid points : " + input.size());
-        for(int i = 0; i < input.size(); i++) {
-            g2d.drawLine((int) center.x, (int) center.y, (int) input.get(i).x, (int) input.get(i).y);
-        }
-    }
     private void draw_line(Point p1,Point p2){
         Graphics2D g2d = (Graphics2D) panel.getGraphics();
         g2d.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
