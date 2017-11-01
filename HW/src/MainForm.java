@@ -92,7 +92,7 @@ public class MainForm extends JFrame{
 
         LOADButton.addActionListener(new ActionListener(){
             String Line;
-            String[] tempArray= new String[2];
+            String[] tempArray= new String[5];
             @Override
             public void actionPerformed(ActionEvent e){
                 JFileChooser fc = new JFileChooser();
@@ -103,7 +103,24 @@ public class MainForm extends JFrame{
                         FileReader fr = new FileReader(Load_F);
                         br = new BufferedReader(fr);
                         while((Line = br.readLine())!= null){
-                            if(!Line.contains("#") && Line.length() > 0){
+                            if(Line.contains("P")){
+                                tempArray = Line.split("\\s");
+                                x = Double.parseDouble(tempArray[1]);
+                                y = Double.parseDouble(tempArray[2]);
+                                Point P = new Point(x,y);
+                                P.draw_point(panel);
+                            }
+                            else if(Line.contains("E")){
+                                tempArray = Line.split("\\s");
+                                double p1x = Double.parseDouble(tempArray[1]);
+                                double p1y = Double.parseDouble(tempArray[2]);
+                                double p2x = Double.parseDouble(tempArray[3]);
+                                double p2y = Double.parseDouble(tempArray[4]);
+                                Point P1 = new Point(p1x, p1y);
+                                Point P2 = new Point(p2x, p2y);
+                                draw_line(P1, P2);
+                            }
+                            else if(!Line.contains("#") && Line.length() > 0){
                                 System.out.println(Line);
                                 times = Integer.parseInt(Line);
                                 for(int i = 0; i < times; i++){
@@ -128,6 +145,12 @@ public class MainForm extends JFrame{
                     }
 
                 }
+            }
+        });
+        SAVEButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+
             }
         });
         NEXTTESTButton.addActionListener(new ActionListener(){
@@ -343,12 +366,17 @@ class Point{
         System.out.println(x + " " + y);
     }
 
-    double return_x(){
+    public double return_x(){
         return x;
     }
 
-    double return_y(){
+    public double return_y(){
         return y;
+    }
+    public void draw_point(JPanel panel){
+        Graphics2D g2d = (Graphics2D) panel.getGraphics();
+        Shape s = new Ellipse2D.Double(x, y, 10,10);
+        g2d.fill(s);
     }
 }
 
