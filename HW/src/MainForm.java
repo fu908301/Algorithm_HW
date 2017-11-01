@@ -8,6 +8,7 @@ import java.awt.geom.Ellipse2D;
 import java.io.*;
 import java.util.ArrayList;
 import  java.math.*;
+import java.util.Collections;
 
 public class MainForm extends JFrame{
     private JPanel panel;
@@ -21,6 +22,7 @@ public class MainForm extends JFrame{
     private JButton SAVEButton;
     private ArrayList<Point> points = new ArrayList<Point>();
     private ArrayList<Point> mid_points = new ArrayList<Point>();
+    private ArrayList<Line> line = new ArrayList<Line>();
     private double x,y;
     private Point center;
     private int times = 0;
@@ -72,6 +74,7 @@ public class MainForm extends JFrame{
                 panel.repaint();
                 points.clear();
                 mid_points.clear();
+                line.clear();
                 times = 0;
             }
         });
@@ -150,7 +153,21 @@ public class MainForm extends JFrame{
         SAVEButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-
+                sort();
+                try{
+                    FileWriter fw = new FileWriter("Test.txt");
+                    for(int i = 0; i < points.size(); i++){
+                        fw.write("P " + " " + points.get(i).x + " " + points.get(i).y + "\r\n");
+                    }
+                    fw.flush();
+                    for(int i = 0; i < line.size(); i++){
+                        fw.write("E " + " " + line.get(i).a.x + " " + line.get(i).a.y + " " + line.get(i).b.x + " " + line.get(i).b.y + "\r\n");
+                    }
+                    fw.flush();
+                    fw.close();
+                }catch (IOException IOE){
+                    IOE.fillInStackTrace();
+                }
             }
         });
         NEXTTESTButton.addActionListener(new ActionListener(){
@@ -185,49 +202,49 @@ public class MainForm extends JFrame{
         });
     }
     private void two_way(){
-        Point p0 = points.get(0), p1 = points.get(1),pmid = new Point(),p2 = new Point(),p3 = new Point() ,p4 = new Point(),p5 = new Point();
+        Point p0 = points.get(0), p1 = points.get(1),pmid = new Point();
+        double temp_x,temp_y;
         if(p0.x == p1.x && p0.y == p1.y){
             System.out.println("The same point.");
         }
         else{
             pmid.x = (p0.x + p1.x) / 2;
             pmid.y = (p0.y + p1.y) / 2;
-            p2.x = 600;
-            p2.y = pmid.y - (p0.x - p1.x) * (600 - pmid.x) / (p0.y - p1.y);
-            p3.x = 0;
-            p3.y = pmid.y - (p0.x - p1.x) * (0 - pmid.x) / (p0.y - p1.y);
-            p4.x = pmid.x - (p0.y - p1.y) * (600 - pmid.y) / (p0.x - p1.x);
-            p4.y = 600;
-            p5.x = pmid.x - (p0.y - p1.y) * (0 - pmid.y) / (p0.x - p1.x);
-            p5.y = 0;
-            draw_line(pmid,p2);
-            draw_line(pmid,p3);
-            draw_line(pmid,p4);
-            draw_line(pmid,p5);
+            temp_x = -1 * (p1.y - p0.y);
+            temp_y = (p1.x - p0.x);
+            Point temp1 = new Point(pmid.x + temp_x, pmid.y + temp_y);
+            Point temp2 = new Point(pmid.x - temp_x, pmid.y - temp_y);
+            draw_line(pmid, temp1);
+            draw_line(pmid, temp2);
+            Point tempP1 = length(pmid, temp1);
+            Point tempP2 = length(pmid, temp2);
+            Line templ = new Line(tempP1, tempP2);
+            line.add(templ);
         }
     }
 
     private void two_way(Point input0,Point input1){
         Point p0 = input0, p1 = input1,pmid = new Point(),p2 = new Point(),p3 = new Point() ,p4 = new Point(),p5 = new Point();
+        double temp_x,temp_y;
         if(p0.x == p1.x && p0.y == p1.y){
             System.out.println("The same point!");
         }
         else {
             pmid.x = (p0.x + p1.x) / 2;
             pmid.y = (p0.y + p1.y) / 2;
-            p2.x = 600;
-            p2.y = pmid.y - (p0.x - p1.x) * (600 - pmid.x) / (p0.y - p1.y);
-            p3.x = 0;
-            p3.y = pmid.y - (p0.x - p1.x) * (0 - pmid.x) / (p0.y - p1.y);
-            p4.x = pmid.x - (p0.y - p1.y) * (600 - pmid.y) / (p0.x - p1.x);
-            p4.y = 600;
-            p5.x = pmid.x - (p0.y - p1.y) * (0 - pmid.y) / (p0.x - p1.x);
-            p5.y = 0;
-            draw_line(pmid, p2);
-            draw_line(pmid, p3);
-            draw_line(pmid, p4);
-            draw_line(pmid, p5);
+            temp_x = -1 * (p1.y - p0.y);
+            temp_y = (p1.x - p0.x);
+            Point temp1 = new Point(pmid.x + temp_x, pmid.y + temp_y);
+            Point temp2 = new Point(pmid.x - temp_x, pmid.y - temp_y);
+            draw_line(pmid, temp1);
+            draw_line(pmid, temp2);
+            length(pmid, temp1);
+            length(pmid, temp2);
             System.out.println("");
+            Point tempP1 = length(pmid, temp1);
+            Point tempP2 = length(pmid, temp2);
+            Line templ = new Line(tempP1, tempP2);
+            line.add(templ);
         }
     }
 
@@ -243,9 +260,15 @@ public class MainForm extends JFrame{
         draw_line(center,P1);
         draw_line(center,P2);
         draw_line(center,P3);
-        length(center,P1);
-        length(center,P2);
-        length(center,P3);
+        Point temp_P1 = length(center,P1);
+        Point temp_P2 = length(center,P2);
+        Point temp_P3 = length(center,P3);
+        Line temp_L1 = new Line(center, temp_P1);
+        Line temp_L2 = new Line(center, temp_P2);
+        Line temp_L3 = new Line(center, temp_P3);
+        line.add(temp_L1);
+        line.add(temp_L2);
+        line.add(temp_L3);
     }
 
     private void same_line(){
@@ -278,7 +301,7 @@ public class MainForm extends JFrame{
         return _return;
     }
 
-    private void length(Point p1, Point p2){
+    private Point length(Point p1, Point p2){
         double disx,disy,finalx = p2.x,finaly = p2.y;
         disx = p2.x - p1.x;
         disy = p2.y - p1.y;
@@ -290,6 +313,7 @@ public class MainForm extends JFrame{
         }
         Point finalp = new Point(finalx, finaly);
         draw_line(p2,finalp);
+        return finalp;
     }
 
     private MouseListener  m = new MouseListener(){
@@ -335,6 +359,51 @@ public class MainForm extends JFrame{
     private void draw_line(Point p1,Point p2){
         Graphics2D g2d = (Graphics2D) panel.getGraphics();
         g2d.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
+    }
+    private void sort(){
+        for(int i = 0; i < points.size() - 1; i++){
+            for(int j = 0; j < points.size() - 1 - i; j++){
+                if(points.get(j).y > points.get(j+1).y){
+                    Collections.swap(points, j, j+1);
+                }
+            }
+        }
+        for(int i = 0; i < points.size() - 1; i++){
+            for(int j = 0; j < points.size() - 1 - i; j++){
+                if(points.get(j).x > points.get(j+1).x){
+                    Collections.swap(points, j, j+1);
+                }
+            }
+        }
+
+        for(int i = 0; i < points.size() - 1; i++){
+            for(int j = 0; j < points.size() - 1 - i; j++){
+                if(line.get(j).b.y > line.get(j+1).b.y){
+                    Collections.swap(line, j, j+1);
+                }
+            }
+        }
+        for(int i = 0; i < points.size() - 1; i++){
+            for(int j = 0; j < points.size() - 1 - i; j++){
+                if(line.get(j).b.x > line.get(j+1).b.x){
+                    Collections.swap(line, j, j+1);
+                }
+            }
+        }
+        for(int i = 0; i < points.size() - 1; i++){
+            for(int j = 0; j < points.size() - 1 - i; j++){
+                if(line.get(j).a.y > line.get(j+1).a.y){
+                    Collections.swap(line, j, j+1);
+                }
+            }
+        }
+        for(int i = 0; i < points.size() - 1; i++){
+            for(int j = 0; j < points.size() - 1 - i; j++){
+                if(line.get(j).a.x > line.get(j+1).a.x){
+                    Collections.swap(line, j, j+1);
+                }
+            }
+        }
     }
 
     public static void main(String args[]){
