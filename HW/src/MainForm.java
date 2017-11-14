@@ -31,7 +31,7 @@ public class MainForm extends JFrame{
     public MainForm(){
         super("TEST");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBounds(600, 600, 600, 600);
+        setBounds(700, 700, 700, 700);
         getContentPane().add(panel);
         addMouseListener(m);
         setVisible(true);
@@ -160,9 +160,10 @@ public class MainForm extends JFrame{
                         fw.write("P " + " " + points.get(i).x + " " + points.get(i).y + "\r\n");
                     }
                     fw.flush();
-                    for(int i = 0; i < line.size(); i++){
-                        fw.write("E " + " " + line.get(i).a.x + " " + line.get(i).a.y + " " + line.get(i).b.x + " " + line.get(i).b.y + "\r\n");
-                    }
+                    if(line.size() > 0)
+                        for(int i = 0; i < line.size(); i++){
+                            fw.write("E " + " " + line.get(i).a.x + " " + line.get(i).a.y + " " + line.get(i).b.x + " " + line.get(i).b.y + "\r\n");
+                        }
                     fw.flush();
                     fw.close();
                 }catch (IOException IOE){
@@ -250,6 +251,7 @@ public class MainForm extends JFrame{
 
     private void three_way(Point A, Point B, Point C) {
         Point BA,CB,AC,P1,P2,P3;
+        center = new Point();
         center = center(A,B,C);
         BA = new Point(B.x - A.x, B.y - A.y);
         CB = new Point(C.x - B.x, C.y - B.y);
@@ -260,6 +262,14 @@ public class MainForm extends JFrame{
         draw_line(center,P1);
         draw_line(center,P2);
         draw_line(center,P3);
+        System.out.print("Center ");
+        center.print();
+        System.out.println("P1 ");
+        P1.print();
+        System.out.println("P2");
+        P2.print();
+        System.out.println("P3");
+        P3.print();
         Point temp_P1 = length(center,P1);
         Point temp_P2 = length(center,P2);
         Point temp_P3 = length(center,P3);
@@ -305,13 +315,11 @@ public class MainForm extends JFrame{
         double disx,disy,finalx = p2.x,finaly = p2.y;
         disx = p2.x - p1.x;
         disy = p2.y - p1.y;
-        while(true){
-            if(finalx >= 600 || finaly >=600 || finalx <= 0 || finaly <= 0)
-                break;
-            finalx += disx;
-            finaly += disy;
-        }
+        finalx = finalx + 1000 * disx;
+        finaly = finaly + 1000 * disy;
         Point finalp = new Point(finalx, finaly);
+        System.out.println("final ");
+        finalp.print();
         draw_line(p2,finalp);
         return finalp;
     }
@@ -375,35 +383,38 @@ public class MainForm extends JFrame{
                 }
             }
         }
-
-        for(int i = 0; i < points.size() - 1; i++){
-            for(int j = 0; j < points.size() - 1 - i; j++){
-                if(line.get(j).b.y > line.get(j+1).b.y){
-                    Collections.swap(line, j, j+1);
+        if(line.size() > 1)
+            for(int i = 0; i < points.size() - 1; i++){
+                for(int j = 0; j < points.size() - 1 - i; j++){
+                    if(line.get(j).b.y > line.get(j+1).b.y){
+                        Collections.swap(line, j, j+1);
+                    }
                 }
             }
-        }
-        for(int i = 0; i < points.size() - 1; i++){
-            for(int j = 0; j < points.size() - 1 - i; j++){
-                if(line.get(j).b.x > line.get(j+1).b.x){
-                    Collections.swap(line, j, j+1);
+        if(line.size() > 1)
+            for(int i = 0; i < points.size() - 1; i++){
+                for(int j = 0; j < points.size() - 1 - i; j++){
+                    if(line.get(j).b.x > line.get(j+1).b.x){
+                        Collections.swap(line, j, j+1);
+                    }
                 }
             }
-        }
-        for(int i = 0; i < points.size() - 1; i++){
-            for(int j = 0; j < points.size() - 1 - i; j++){
-                if(line.get(j).a.y > line.get(j+1).a.y){
-                    Collections.swap(line, j, j+1);
+        if(line.size() > 1)
+            for(int i = 0; i < points.size() - 1; i++){
+                for(int j = 0; j < points.size() - 1 - i; j++){
+                    if(line.get(j).a.y > line.get(j+1).a.y){
+                        Collections.swap(line, j, j+1);
+                    }
                 }
             }
-        }
-        for(int i = 0; i < points.size() - 1; i++){
-            for(int j = 0; j < points.size() - 1 - i; j++){
-                if(line.get(j).a.x > line.get(j+1).a.x){
-                    Collections.swap(line, j, j+1);
+        if(line.size() > 1)
+            for(int i = 0; i < points.size() - 1; i++){
+                for(int j = 0; j < points.size() - 1 - i; j++){
+                    if(line.get(j).a.x > line.get(j+1).a.x){
+                        Collections.swap(line, j, j+1);
+                    }
                 }
             }
-        }
     }
 
     public static void main(String args[]){
