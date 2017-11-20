@@ -20,7 +20,9 @@ public class MainForm extends JFrame{
     private JButton LOADButton;
     private JButton NEXTTESTButton;
     private JButton SAVEButton;
+    private JButton STEPButton;
     private ArrayList<Point> points = new ArrayList<Point>();
+    private ArrayList<Point> points2 = new ArrayList<Point>();//use for convex hull
     private ArrayList<Point> mid_points = new ArrayList<Point>();
     private ArrayList<Line> line = new ArrayList<Line>();
     private double x,y;
@@ -73,6 +75,7 @@ public class MainForm extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 panel.repaint();
                 points.clear();
+                points2.clear();
                 mid_points.clear();
                 line.clear();
                 times = 0;
@@ -198,10 +201,18 @@ public class MainForm extends JFrame{
                 }catch(IOException IOE){
                     IOE.fillInStackTrace();
                 }
-
+            }
+        });
+        STEPButton.addActionListener(new ActionListener(){
+            String Line;
+            String[] tempArray= new String[2];
+            @Override
+            public void actionPerformed(ActionEvent e){
+                convex_hull();
             }
         });
     }
+
     private void two_way(){
         Point p0 = points.get(0), p1 = points.get(1),pmid = new Point();
         double temp_x,temp_y;
@@ -330,8 +341,9 @@ public class MainForm extends JFrame{
             y = e.getY();
             Point p = new Point(x, y);
             points.add(p);
+
             Graphics2D g2d = (Graphics2D) panel.getGraphics();
-            Shape s = new Ellipse2D.Double(x, y, 10,10);
+            Shape s = new Ellipse2D.Double(x, y, 8,8);
             g2d.fill(s);
             System.out.println(x + " " + y );
             times++;
@@ -415,6 +427,50 @@ public class MainForm extends JFrame{
                     }
                 }
             }
+    }
+    // 小於。用以找出最低最左邊的點。
+    boolean compare(Point a, Point b) {
+        return (a.y < b.y) || (a.y == b.y && a.x < b.x);
+    }
+
+    // 向量OA叉積向量OB。大於零表示從OA到OB為逆時針旋轉。
+    double cross(Point o, Point a, Point b) {
+        return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+    }
+
+    // 兩點距離的平方
+    double length2(Point a, Point b) {
+        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    }
+    boolean far(Point o, Point a, Point b) {
+        return length2(o, a) > length2(o, b);
+    }
+
+    void convex_hull(){
+        int start = 0;
+        for (int i = 0; i < points.size(); i++)
+            if (compare(points.get(i),points.get(start)))
+                start = i;
+        int m = 0;
+        points2.add(points.get(start));
+        while (true){
+            m++;
+            int next = start;
+            for(int i = 0; i < points.size(); i++){
+                double c = cross(points2.get(m-1), points.get(i), points.get(next));
+                if(c > 0 || (c == 0 && far(points2.get(m-1), points.get(i), points.get(next))))
+                    next = i;
+            }
+
+            if(next == start) break;
+            points2.add(points.get(next));
+        }
+
+        draw_line(points2.get(0), points2.get(points2.size()-1));
+        for(int i = 0; i < points2.size() - 1; i++){
+            draw_line(points2.get(i), points2.get(i+1));
+            System.out.println(points2.get(i).x + " " + points2.get(i).y + "      " + points2.get(i+1).x + " " + points2.get(i+1).y);
+        }
     }
 
     public static void main(String args[]){
