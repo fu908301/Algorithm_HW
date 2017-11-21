@@ -25,6 +25,7 @@ public class MainForm extends JFrame{
     private ArrayList<Point> points2 = new ArrayList<Point>();//use for convex hull
     private ArrayList<Point> mid_points = new ArrayList<Point>();
     private ArrayList<Line> line = new ArrayList<Line>();
+    private ArrayList<Line> convex_hull = new ArrayList<Line>();
     private double x,y;
     private Point center;
     private int times = 0;
@@ -45,28 +46,7 @@ public class MainForm extends JFrame{
                     two_way();
                 }
                 else if(times == 3){
-                    if(points.get(0).x == points.get(1).x && points.get(0).y == points.get(1).y && points.get(0).x == points.get(2).x && points.get(0).y == points.get(2).y){}
-                    else if(which_T(points) == 0) {
-                        same_line();
-                    }
-                    else if(which_T(points) > 0){
-                        A.x = points.get(0).x;
-                        A.y = points.get(0).y;
-                        B.x = points.get(2).x;
-                        B.y = points.get(2).y;
-                        C.x = points.get(1).x;
-                        C.y = points.get(1).y;
-                        three_way(A,B,C);
-                    }
-                    else if(which_T(points) < 0){
-                        A.x = points.get(0).x;
-                        A.y = points.get(0).y;
-                        B.x = points.get(1).x;
-                        B.y = points.get(1).y;
-                        C.x = points.get(2).x;
-                        C.y = points.get(2).y;
-                        three_way(A,B,C);
-                    }
+                   three_way(points);
                 }
             }
         });
@@ -260,8 +240,28 @@ public class MainForm extends JFrame{
         }
     }
 
-    private void three_way(Point A, Point B, Point C) {
-        Point BA,CB,AC,P1,P2,P3;
+    private void three_way(ArrayList<Point> input) {
+        Point A = new Point(),B = new Point(),C = new Point(),BA,CB,AC,P1,P2,P3;
+        if(input.get(0).x == input.get(1).x && input.get(0).y == input.get(1).y && input.get(0).x == input.get(2).x && input.get(0).y == input.get(2).y){}
+        else if(which_T(input) == 0) {
+            same_line();
+        }
+        else if(which_T(input) > 0){
+            A.x = input.get(0).x;
+            A.y = input.get(0).y;
+            B.x = input.get(2).x;
+            B.y = input.get(2).y;
+            C.x = input.get(1).x;
+            C.y = input.get(1).y;
+        }
+        else if(which_T(input) < 0){
+            A.x = input.get(0).x;
+            A.y = input.get(0).y;
+            B.x = input.get(1).x;
+            B.y = input.get(1).y;
+            C.x = input.get(2).x;
+            C.y = input.get(2).y;
+        }
         center = new Point();
         center = center(A,B,C);
         BA = new Point(B.x - A.x, B.y - A.y);
@@ -467,12 +467,53 @@ public class MainForm extends JFrame{
         }
 
         draw_line(points2.get(0), points2.get(points2.size()-1));
+        Line temp = new Line(points2.get(0), points2.get(points2.size()-1));
+        convex_hull.add(temp);
         for(int i = 0; i < points2.size() - 1; i++){
+            temp = new Line(points2.get(i), points2.get(i+1));
+            convex_hull.add(temp);
             draw_line(points2.get(i), points2.get(i+1));
             System.out.println(points2.get(i).x + " " + points2.get(i).y + "      " + points2.get(i+1).x + " " + points2.get(i+1).y);
         }
     }
+    //在divid and conquer 之前先把點按照x軸做排序
+    ArrayList<Point> divid_sort(ArrayList<Point> input){
+        for(int i = 0; i < input.size() - 1; i++){
+            for(int j = 0; j < input.size() - 1 - i; j++){
+                if(input.get(j).x > input.get(j+1).x){
+                    Collections.swap(input, j, j+1);
+                }
+            }
+        }
+        return input;
+    }
 
+    void divid_conquer(int times,ArrayList<Point> input){
+        int left = 0,right = 0;
+        ArrayList<Point> P_Left = new ArrayList<Point>();
+        ArrayList<Point> P_Right = new ArrayList<Point>();
+        if(times > 3 && times % 2 != 0){
+            left = times / 2 + 1;
+            right = times / 2;
+        }
+        else if(times > 3 && times % 2 == 0){
+            left = times / 2 ;
+            right = times / 2;
+        }
+        for(int i = 0; i < left; i++){
+            P_Left.add(input.get(i));
+        }
+        for(int i = left; i < left + right; i++){
+            P_Left.add(input.get(i));
+        }
+        if(left > 3){
+            divid_conquer(left,P_Left);
+        }
+        if(right > 3){
+            divid_conquer(right,P_Right);
+        }
+
+    }
     public static void main(String args[]){
         MainForm m;
         m = new MainForm();
