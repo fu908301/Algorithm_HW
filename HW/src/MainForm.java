@@ -22,7 +22,6 @@ public class MainForm extends JFrame{
     private JButton SAVEButton;
     private JButton STEPButton;
     private ArrayList<Point> points = new ArrayList<Point>();
-    private ArrayList<Point> points2 = new ArrayList<Point>();//use for convex hull
     private ArrayList<Point> mid_points = new ArrayList<Point>();
     private ArrayList<Line> line = new ArrayList<Line>();
     private ArrayList<Line> convex_hull = new ArrayList<Line>();
@@ -55,7 +54,6 @@ public class MainForm extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 panel.repaint();
                 points.clear();
-                points2.clear();
                 mid_points.clear();
                 line.clear();
                 times = 0;
@@ -188,7 +186,7 @@ public class MainForm extends JFrame{
             String[] tempArray= new String[2];
             @Override
             public void actionPerformed(ActionEvent e){
-                convex_hull();
+
             }
         });
     }
@@ -208,16 +206,17 @@ public class MainForm extends JFrame{
             Point temp2 = new Point(pmid.x - temp_x, pmid.y - temp_y);
             draw_line(pmid, temp1);
             draw_line(pmid, temp2);
-            Point tempP1 = length(pmid, temp1);
-            Point tempP2 = length(pmid, temp2);
+            Point tempP1 = length(pmid, temp1, 1);
+            Point tempP2 = length(pmid, temp2, 1);
             Line templ = new Line(tempP1, tempP2);
             line.add(templ);
         }
     }
 
-    private void two_way(Point input0,Point input1){
+    private Line two_way(Point input0,Point input1,int tag){
         Point p0 = input0, p1 = input1,pmid = new Point(),p2 = new Point(),p3 = new Point() ,p4 = new Point(),p5 = new Point();
         double temp_x,temp_y;
+        Line templ = new Line();
         if(p0.x == p1.x && p0.y == p1.y){
             System.out.println("The same point!");
         }
@@ -228,16 +227,19 @@ public class MainForm extends JFrame{
             temp_y = (p1.x - p0.x);
             Point temp1 = new Point(pmid.x + temp_x, pmid.y + temp_y);
             Point temp2 = new Point(pmid.x - temp_x, pmid.y - temp_y);
-            draw_line(pmid, temp1);
-            draw_line(pmid, temp2);
-            length(pmid, temp1);
-            length(pmid, temp2);
+            if(tag == 1){
+                draw_line(pmid, temp1);
+                draw_line(pmid, temp2);
+            }
+            length(pmid, temp1, 1);
+            length(pmid, temp2, 1);
             System.out.println("");
-            Point tempP1 = length(pmid, temp1);
-            Point tempP2 = length(pmid, temp2);
-            Line templ = new Line(tempP1, tempP2);
+            Point tempP1 = length(pmid, temp1, 1);
+            Point tempP2 = length(pmid, temp2, 1);
+            templ = new Line(tempP1, tempP2);
             line.add(templ);
         }
+        return templ;
     }
 
     private void three_way(ArrayList<Point> input) {
@@ -281,9 +283,9 @@ public class MainForm extends JFrame{
         P2.print();
         System.out.println("P3");
         P3.print();
-        Point temp_P1 = length(center,P1);
-        Point temp_P2 = length(center,P2);
-        Point temp_P3 = length(center,P3);
+        Point temp_P1 = length(center,P1, 1);
+        Point temp_P2 = length(center,P2, 1);
+        Point temp_P3 = length(center,P3, 1);
         Line temp_L1 = new Line(center, temp_P1);
         Line temp_L2 = new Line(center, temp_P2);
         Line temp_L3 = new Line(center, temp_P3);
@@ -312,8 +314,8 @@ public class MainForm extends JFrame{
             other1 = new Line(l0);
             other2 = new Line(l1);
         }
-        two_way(other1.a,other1.b);
-        two_way(other2.a,other2.b);
+        two_way(other1.a,other1.b, 1);
+        two_way(other2.a,other2.b, 1);
     }
 
     private double which_T(ArrayList<Point> input){
@@ -322,7 +324,7 @@ public class MainForm extends JFrame{
         return _return;
     }
 
-    private Point length(Point p1, Point p2){
+    private Point length(Point p1, Point p2, int tag){
         double disx,disy,finalx = p2.x,finaly = p2.y;
         disx = p2.x - p1.x;
         disy = p2.y - p1.y;
@@ -331,7 +333,8 @@ public class MainForm extends JFrame{
         Point finalp = new Point(finalx, finaly);
         System.out.println("final ");
         finalp.print();
-        draw_line(p2,finalp);
+        if(tag == 1)
+            draw_line(p2,finalp);
         return finalp;
     }
 
@@ -446,24 +449,33 @@ public class MainForm extends JFrame{
         return length2(o, a) > length2(o, b);
     }
 
-    void convex_hull(){
+    void convex_hull(ArrayList<Point> P_Left, ArrayList<Point> P_Right){
+        ArrayList<Point> P = new ArrayList<Point>();
+        ArrayList<Point> points2 = new ArrayList<Point>();//use for convex hull
+        for(int i = 0; i < P_Left.size(); i++){
+            P.add(P_Left.get(i));
+        }
+        for(int i = 0; i < P_Right.size(); i++){
+            P.add(P_Right.get(i));
+        }
+
         int start = 0;
-        for (int i = 0; i < points.size(); i++)
-            if (compare(points.get(i),points.get(start)))
+        for (int i = 0; i < P.size(); i++)
+            if (compare(P.get(i),P.get(start)))
                 start = i;
         int m = 0;
-        points2.add(points.get(start));
+        points2.add(P.get(start));
         while (true){
             m++;
             int next = start;
-            for(int i = 0; i < points.size(); i++){
-                double c = cross(points2.get(m-1), points.get(i), points.get(next));
-                if(c > 0 || (c == 0 && far(points2.get(m-1), points.get(i), points.get(next))))
+            for(int i = 0; i < P.size(); i++){
+                double c = cross(points2.get(m-1), P.get(i), P.get(next));
+                if(c > 0 || (c == 0 && far(points2.get(m-1), P.get(i), P.get(next))))
                     next = i;
             }
 
             if(next == start) break;
-            points2.add(points.get(next));
+            points2.add(P.get(next));
         }
 
         draw_line(points2.get(0), points2.get(points2.size()-1));
@@ -512,6 +524,37 @@ public class MainForm extends JFrame{
         if(right > 3){
             divid_conquer(right,P_Right);
         }
+
+    }
+    void merge(ArrayList<Point> P_Left, ArrayList<Point> P_Right){
+        Line line1 = new Line(), line2 = new Line(),convexlinetop,convexlinedown;
+        ArrayList<Line> temp = new ArrayList<Line>();
+        if(P_Left.size() == 2){
+            line1 = two_way(P_Left.get(0), P_Left.get(1),0);
+        }
+        if(P_Right.size() == 2){
+            line2 = two_way(P_Right.get(0), P_Right.get(1),0);
+        }
+        convex_hull(P_Left,P_Right);
+        for(int i = 0; i < convex_hull.size(); i++){
+            for(int j = 0; j < P_Left.size(); j++){
+                for(int k = 0; k < P_Right.size(); k++ ){
+                    if((convex_hull.get(i).a.x == P_Left.get(j).x && convex_hull.get(i).a.y == P_Left.get(j).y && convex_hull.get(i).b.x == P_Right.get(k).x && convex_hull.get(i).b.y == P_Right.get(k).y) || (convex_hull.get(i).b.x == P_Left.get(j).x && convex_hull.get(i).b.y == P_Left.get(j).y && convex_hull.get(i).a.x == P_Right.get(k).x && convex_hull.get(i).a.y == P_Right.get(k).y)){
+                        temp.add(convex_hull.get(i));
+                    }
+                }
+            }
+        }
+        if(temp.get(0).a.y > temp.get(1).a.y){
+            convexlinetop = new Line(temp.get(0).a,temp.get(0).b);
+            convexlinedown = new Line(temp.get(1).a,temp.get(1).b);
+        }
+        else {
+            convexlinetop = new Line(temp.get(1).a,temp.get(1).b);
+            convexlinedown = new Line(temp.get(0).a,temp.get(0).b);
+        }
+        Line left = two_way(P_Left.get(0), P_Left.get(1),0);
+        Line Right = two_way(P_Right.get(0), P_Right.get(1),0);
 
     }
     public static void main(String args[]){
