@@ -1,3 +1,5 @@
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -46,6 +48,9 @@ public class MainForm extends JFrame{
                 }
                 else if(times == 3){
                    three_way(points);
+                }
+                else if(times > 3){
+                    divid_conquer(times,points);
                 }
             }
         });
@@ -458,7 +463,6 @@ public class MainForm extends JFrame{
         for(int i = 0; i < P_Right.size(); i++){
             P.add(P_Right.get(i));
         }
-
         int start = 0;
         for (int i = 0; i < P.size(); i++)
             if (compare(P.get(i),P.get(start)))
@@ -477,14 +481,11 @@ public class MainForm extends JFrame{
             if(next == start) break;
             points2.add(P.get(next));
         }
-
-        draw_line(points2.get(0), points2.get(points2.size()-1));
         Line temp = new Line(points2.get(0), points2.get(points2.size()-1));
         convex_hull.add(temp);
         for(int i = 0; i < points2.size() - 1; i++){
             temp = new Line(points2.get(i), points2.get(i+1));
             convex_hull.add(temp);
-            draw_line(points2.get(i), points2.get(i+1));
             System.out.println(points2.get(i).x + " " + points2.get(i).y + "      " + points2.get(i+1).x + " " + points2.get(i+1).y);
         }
     }
@@ -500,8 +501,9 @@ public class MainForm extends JFrame{
         return input;
     }
 
-    void divid_conquer(int times,ArrayList<Point> input){
+    void divid_conquer(int times,ArrayList<Point> tempinput){
         int left = 0,right = 0;
+        ArrayList<Point> input = divid_sort(tempinput);
         ArrayList<Point> P_Left = new ArrayList<Point>();
         ArrayList<Point> P_Right = new ArrayList<Point>();
         if(times > 3 && times % 2 != 0){
@@ -516,7 +518,7 @@ public class MainForm extends JFrame{
             P_Left.add(input.get(i));
         }
         for(int i = left; i < left + right; i++){
-            P_Left.add(input.get(i));
+            P_Right.add(input.get(i));
         }
         if(left > 3){
             divid_conquer(left,P_Left);
@@ -524,7 +526,7 @@ public class MainForm extends JFrame{
         if(right > 3){
             divid_conquer(right,P_Right);
         }
-
+        merge(P_Left,P_Right);
     }
     void merge(ArrayList<Point> P_Left, ArrayList<Point> P_Right){
         Line line1 = new Line(), line2 = new Line(),convexlinetop,convexlinedown;
@@ -536,15 +538,15 @@ public class MainForm extends JFrame{
             line2 = two_way(P_Right.get(0), P_Right.get(1),0);
         }
         convex_hull(P_Left,P_Right);
+        System.out.println("Left size : " + P_Left.size());
+        System.out.println("Right size : " + P_Right.size());
+        System.out.println("Convex hull size : " + convex_hull.size());
         for(int i = 0; i < convex_hull.size(); i++){
-            for(int j = 0; j < P_Left.size(); j++){
-                for(int k = 0; k < P_Right.size(); k++ ){
-                    if((convex_hull.get(i).a.x == P_Left.get(j).x && convex_hull.get(i).a.y == P_Left.get(j).y && convex_hull.get(i).b.x == P_Right.get(k).x && convex_hull.get(i).b.y == P_Right.get(k).y) || (convex_hull.get(i).b.x == P_Left.get(j).x && convex_hull.get(i).b.y == P_Left.get(j).y && convex_hull.get(i).a.x == P_Right.get(k).x && convex_hull.get(i).a.y == P_Right.get(k).y)){
-                        temp.add(convex_hull.get(i));
-                    }
-                }
+            if((P_Left.contains(convex_hull.get(i).a) && P_Right.contains(convex_hull.get(i).b)) || (P_Left.contains(convex_hull.get(i).b) && P_Right.contains(convex_hull.get(i).a))){
+                temp.add(convex_hull.get(i));
             }
         }
+        System.out.println("temp size:" + temp.size());
         if(temp.get(0).a.y > temp.get(1).a.y){
             convexlinetop = new Line(temp.get(0).a,temp.get(0).b);
             convexlinedown = new Line(temp.get(1).a,temp.get(1).b);
@@ -553,9 +555,71 @@ public class MainForm extends JFrame{
             convexlinetop = new Line(temp.get(1).a,temp.get(1).b);
             convexlinedown = new Line(temp.get(0).a,temp.get(0).b);
         }
+        System.out.print("Down line :");
+        convexlinedown.print();
+        System.out.print("Up line :");
+        convexlinetop.print();
         Line left = two_way(P_Left.get(0), P_Left.get(1),0);
+        System.out.print("Left Line : ");
+        left.print();
         Line Right = two_way(P_Right.get(0), P_Right.get(1),0);
+        System.out.print("Right Line : ");
+        Right.print();
+        Point temp1 = intersection(two_way(convexlinetop.a,convexlinetop.b,0),left);//
+        System.out.print("Intersection 1 : ");
+        temp1.print();
+        Point temp2 = intersection(convexlinetop,Right);
+        System.out.print("Intersection 2 : ");
+        temp2.print();
+        Point p1 = new Point();
+        if(temp1.y > temp2.y){
+            p1 = new Point(temp1.x,temp1.y);
+            Point mid1 = mid_point(P_Left.get(0), P_Left.get(1));
+            Point mid2 = mid_point(convexlinetop.a,convexlinetop.b);
+            draw_line(p1,mid1);
+            draw_line(p1,mid2);
+            length(p1,mid1,1);
+            length(p1,mid2,1);
+        }
+        else if(temp2.y > temp1.y){
+            p1 = new Point(temp2.x,temp2.y);
+            Point mid1 = mid_point(P_Right.get(0), P_Right.get(1));
+            Point mid2 = mid_point(convexlinetop.a,convexlinetop.b);
+            draw_line(p1,mid1);
+            draw_line(p1,mid2);
+            length(p1,mid1,1);
+            length(p1,mid2,1);
+        }
+        Point temp3 = intersection(convexlinedown,left);
+        Point temp4 = intersection(convexlinedown,Right);
+        Point p2 = new Point();
+        if(temp3.y < temp4.y){
+            p2 = new Point(temp3.x,temp3.y);
+            Point mid1 = mid_point(P_Left.get(0), P_Left.get(1));
+            Point mid2 = mid_point(convexlinedown.a,convexlinedown.b);
+            draw_line(p2,mid1);
+            draw_line(p2,mid2);
+            length(p2,mid1,1);
+            length(p2,mid2,1);
+        }
+        else if(temp4.y < temp3.y){
+            p2 = new Point(temp4.x,temp4.y);
+            Point mid1 = mid_point(P_Right.get(0), P_Right.get(1));
+            Point mid2 = mid_point(convexlinedown.a,convexlinedown.b);
+            draw_line(p2,mid1);
+            draw_line(p2,mid2);
+            length(p2,mid1,1);
+            length(p2,mid2,1);
+        }
+        draw_line(p1,p2);
+    }
 
+    Point mid_point(Point a, Point b){
+        double x,y;
+        x = (a.x + b.x) / 2;
+        y = (a.y + b.y) / 2;
+        Point return_ = new Point(x, y);
+        return return_;
     }
     public static void main(String args[]){
         MainForm m;
@@ -625,7 +689,7 @@ class Line{
     }
 
     public void print(){
-        System.out.print(a.return_x() + " " + a.return_y() + " " + b.return_x() + " " + b.return_y());
+        System.out.println(a.return_x() + " " + a.return_y() + " " + b.return_x() + " " + b.return_y());
     }
 
     double length(){
