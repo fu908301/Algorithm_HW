@@ -62,6 +62,7 @@ public class MainForm extends JFrame{
                 mid_points.clear();
                 line.clear();
                 times = 0;
+                convex_hull.clear();
             }
         });
         setButton.addActionListener(new ActionListener(){
@@ -236,11 +237,11 @@ public class MainForm extends JFrame{
                 draw_line(pmid, temp1);
                 draw_line(pmid, temp2);
             }
-            length(pmid, temp1, 1);
-            length(pmid, temp2, 1);
+            length(pmid, temp1, tag);
+            length(pmid, temp2, tag);
             System.out.println("");
-            Point tempP1 = length(pmid, temp1, 1);
-            Point tempP2 = length(pmid, temp2, 1);
+            Point tempP1 = length(pmid, temp1, tag);
+            Point tempP2 = length(pmid, temp2, tag);
             templ = new Line(tempP1, tempP2);
             line.add(templ);
         }
@@ -336,8 +337,6 @@ public class MainForm extends JFrame{
         finalx = finalx + 1000 * disx;
         finaly = finaly + 1000 * disy;
         Point finalp = new Point(finalx, finaly);
-        System.out.println("final ");
-        finalp.print();
         if(tag == 1)
             draw_line(p2,finalp);
         return finalp;
@@ -568,7 +567,7 @@ public class MainForm extends JFrame{
         Point temp1 = intersection(two_way(convexlinetop.a,convexlinetop.b,0),left);//
         System.out.print("Intersection 1 : ");
         temp1.print();
-        Point temp2 = intersection(convexlinetop,Right);
+        Point temp2 = intersection(two_way(convexlinetop.a, convexlinetop.b, 0),Right);
         System.out.print("Intersection 2 : ");
         temp2.print();
         Point p1 = new Point();
@@ -576,42 +575,84 @@ public class MainForm extends JFrame{
             p1 = new Point(temp1.x,temp1.y);
             Point mid1 = mid_point(P_Left.get(0), P_Left.get(1));
             Point mid2 = mid_point(convexlinetop.a,convexlinetop.b);
-            draw_line(p1,mid1);
-            draw_line(p1,mid2);
-            length(p1,mid1,1);
-            length(p1,mid2,1);
+            if( p1.x > mid1.x){
+                draw_line(p1,mid1);
+                length(p1,mid1,1);
+            }
+            else {
+                length(mid1,p1,1);
+            }
+            if(p1.y < mid2.y) {
+                draw_line(p1, mid2);
+                length(p1, mid2, 1);
+            }
+            else {
+                length(mid2, p1, 1);
+            }
         }
         else if(temp2.y > temp1.y){
             p1 = new Point(temp2.x,temp2.y);
             Point mid1 = mid_point(P_Right.get(0), P_Right.get(1));
             Point mid2 = mid_point(convexlinetop.a,convexlinetop.b);
-            draw_line(p1,mid1);
-            draw_line(p1,mid2);
-            length(p1,mid1,1);
-            length(p1,mid2,1);
+            if(p1.x < mid1.x){
+                draw_line(p1,mid1);
+                length(p1,mid1,1);
+            }
+            else {
+                length(mid1,p1,1);
+            }
+            if(p1.y < mid2.y) {
+                draw_line(p1, mid2);
+                length(p1, mid2, 1);
+            }
+            else {
+                length(mid2, p1, 1);
+            }
         }
-        Point temp3 = intersection(convexlinedown,left);
-        Point temp4 = intersection(convexlinedown,Right);
+        Point temp3 = intersection(two_way(convexlinedown.a, convexlinedown.b, 0),left);
+        Point temp4 = intersection(two_way(convexlinedown.a, convexlinedown.b, 0),Right);
         Point p2 = new Point();
         if(temp3.y < temp4.y){
             p2 = new Point(temp3.x,temp3.y);
             Point mid1 = mid_point(P_Left.get(0), P_Left.get(1));
             Point mid2 = mid_point(convexlinedown.a,convexlinedown.b);
-            draw_line(p2,mid1);
-            draw_line(p2,mid2);
-            length(p2,mid1,1);
-            length(p2,mid2,1);
+            if(p2.x > mid1.x){
+                draw_line(p2,mid1);
+                length(p2,mid1,1);
+            }
+            else {
+                length(mid1,p2,1);
+            }
+
+            if(p2.y > mid2.y) {
+                draw_line(p2, mid2);
+                length(p2, mid2, 1);
+            }
+            else {
+                length(mid2, p2, 1);
+            }
         }
         else if(temp4.y < temp3.y){
             p2 = new Point(temp4.x,temp4.y);
             Point mid1 = mid_point(P_Right.get(0), P_Right.get(1));
             Point mid2 = mid_point(convexlinedown.a,convexlinedown.b);
-            draw_line(p2,mid1);
-            draw_line(p2,mid2);
-            length(p2,mid1,1);
-            length(p2,mid2,1);
+            if(p2.x < mid1.x){
+                draw_line(p2,mid1);
+                length(p2,mid1,1);
+            }
+            else {
+                length(mid1,p2,1);
+            }
+
+            if(p2.y > mid2.y) {
+                draw_line(p2, mid2);
+                length(p2, mid2, 1);
+            }
+            else {
+                length(mid2, p2, 1);
+            }
         }
-        draw_line(p1,p2);
+        draw_line(p1, p2);
     }
 
     Point mid_point(Point a, Point b){
