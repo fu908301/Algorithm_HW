@@ -641,19 +641,19 @@ public class MainForm extends JFrame{
             B = new Point(convexlinetop.b.x, convexlinetop.b.y);
         }
         System.out.println("PTW size" + PTW.size());
-        length = 600 * 600 + 600 * 600;
         Point tempA = new Point();
         Point tempB = new Point();
+        double tempY;
+        double Y;
         while(true) {
             Point inter = new Point();
             double temp_length;
             Point_two_way PTW2 = new Point_two_way();
-            length = 600 * 600 + 600 * 600;
+            length = Double.MAX_VALUE;
+            Y = 0;
             Line hyper_line = new Line(A, B);
             System.out.print("hyper_line now : ");
             hyper_line.print();
-            System.out.print("convexlinedown : ");
-            convexlinedown.print();
             if(convexlinedown.The_same(hyper_line)) {
                 if(mid_point(convexlinedown.a, convexlinedown.b).y > prePoint.y){
                     length(mid_point(convexlinedown.a, convexlinedown.b), prePoint,1);
@@ -664,53 +664,89 @@ public class MainForm extends JFrame{
                 }
                 break;
             }
-
-            for(int i = 0; i < PTW.size(); i++){
-                PTW2 = new Point_two_way(PTW.get(i).a, PTW.get(i).b, PTW.get(i).line);
-                draw_line(PTW2.line.a, PTW2.line.b);
-                inter = intersection(PTW2.line, two_way(hyper_line.a, hyper_line.b, 0));
-                if(inter.y < prePoint.y) {
-                    temp_length = length2(prePoint, inter);
-                    if (temp_length < length) {
+            if(convexlinetop.The_same(hyper_line)){
+                for(int i = 0; i < PTW.size(); i++){
+                    PTW2 = new Point_two_way(PTW.get(i).a, PTW.get(i).b, PTW.get(i).line);
+                    draw_line(PTW2.line.a, PTW2.line.b);
+                    inter = intersection(PTW2.line, two_way(hyper_line.a, hyper_line.b, 0));
+                    tempY = inter.y;
+                    if (Y <= tempY) {
                         if (hyper_line.a.the_same(PTW2.a)) {
                             System.out.println("1");
                             tempA = new Point(PTW.get(i).b.x, PTW2.b.y);
                             tempB = new Point(B.x, B.y);
-                            length = temp_length;
                             nextPoint = inter;
+                            Y = tempY;
                         } else if (hyper_line.a.the_same(PTW2.b)) {
                             System.out.println("2");
                             tempA = new Point(PTW.get(i).a.x, PTW2.a.y);
                             tempB = new Point(B.x, B.y);
-                            length = temp_length;
                             nextPoint = inter;
+                            Y = tempY;
                         } else if (hyper_line.b.the_same(PTW2.a)) {
                             System.out.println("3");
                             tempA = new Point(A.x, A.y);
                             tempB = new Point(PTW.get(i).b.x, PTW2.b.y);
-                            length = temp_length;
                             nextPoint = inter;
+                            Y = tempY;
                         } else if (hyper_line.b.the_same(PTW2.b)) {
                             System.out.println("4");
                             tempA = new Point(A.x, A.y);
                             tempB = new Point(PTW.get(i).a.x, PTW2.a.y);
-                            length = temp_length;
                             nextPoint = inter;
+                            Y = tempY;
                         }
                     }
                 }
-            }
-            A = new Point(tempA.x, tempA.y);
-            B = new Point(tempB.x, tempB.y);
-            draw_blue_line(prePoint,nextPoint);
-            if(convexlinetop.The_same(hyper_line)){
-                if(mid_point(convexlinetop.a, convexlinetop.b).y > nextPoint.y){
-                    length(mid_point(convexlinedown.a, convexlinedown.b), nextPoint,1);
+                if(mid_point(convexlinetop.a, convexlinetop.b).y < nextPoint.y){
+                    length(mid_point(convexlinetop.a, convexlinetop.b), nextPoint,1);
                 }
                 else{
-                    length(prePoint, mid_point(convexlinedown.a, convexlinedown.b), 1);
+                    length(nextPoint, mid_point(convexlinetop.a, convexlinetop.b), 1);
+                    draw_blue_line(mid_point(convexlinetop.a, convexlinetop.b), nextPoint);
                 }
             }
+            else {
+                for(int i = 0; i < PTW.size(); i++){
+                    PTW2 = new Point_two_way(PTW.get(i).a, PTW.get(i).b, PTW.get(i).line);
+                    draw_line(PTW2.line.a, PTW2.line.b);
+                    inter = intersection(PTW2.line, two_way(hyper_line.a, hyper_line.b, 0));
+                    if(inter.y < prePoint.y) {
+                        temp_length = length2(prePoint, inter);
+                        if (temp_length <= length) {
+                            if (hyper_line.a.the_same(PTW2.a)) {
+                                System.out.println("1");
+                                tempA = new Point(PTW.get(i).b.x, PTW2.b.y);
+                                tempB = new Point(B.x, B.y);
+                                length = temp_length;
+                                nextPoint = inter;
+                            } else if (hyper_line.a.the_same(PTW2.b)) {
+                                System.out.println("2");
+                                tempA = new Point(PTW.get(i).a.x, PTW2.a.y);
+                                tempB = new Point(B.x, B.y);
+                                length = temp_length;
+                                nextPoint = inter;
+                            } else if (hyper_line.b.the_same(PTW2.a)) {
+                                System.out.println("3");
+                                tempA = new Point(A.x, A.y);
+                                tempB = new Point(PTW.get(i).b.x, PTW2.b.y);
+                                length = temp_length;
+                                nextPoint = inter;
+                            } else if (hyper_line.b.the_same(PTW2.b)) {
+                                System.out.println("4");
+                                tempA = new Point(A.x, A.y);
+                                tempB = new Point(PTW.get(i).a.x, PTW2.a.y);
+                                length = temp_length;
+                                nextPoint = inter;
+                            }
+                        }
+                    }
+                }
+                draw_blue_line(prePoint,nextPoint);
+            }
+
+            A = new Point(tempA.x, tempA.y);
+            B = new Point(tempB.x, tempB.y);
             prePoint = nextPoint;
             prePoint.draw_point(panel);
         }
