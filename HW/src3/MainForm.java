@@ -534,6 +534,13 @@ public class MainForm extends JFrame{
     ArrayList<Point> divid_sort(ArrayList<Point> input){
         for(int i = 0; i < input.size() - 1; i++){
             for(int j = 0; j < input.size() - 1 - i; j++){
+                if(input.get(j).y > input.get(j+1).y){
+                    Collections.swap(input, j, j+1);
+                }
+            }
+        }
+        for(int i = 0; i < input.size() - 1; i++){
+            for(int j = 0; j < input.size() - 1 - i; j++){
                 if(input.get(j).x > input.get(j+1).x){
                     Collections.swap(input, j, j+1);
                 }
@@ -586,13 +593,27 @@ public class MainForm extends JFrame{
         ArrayList<Line> convexhull_L = convex_hull(P_Left);
         ArrayList<Line> convexhull_R = convex_hull(P_Right);
         ArrayList<Line> convexhull = convex_hull(P_Left,P_Right);
+        System.out.print("Left:");
+        for(int i = 0; i < convexhull_L.size();i++){
+            convexhull_L.get(i).print();
+        }
+        System.out.print("Right:");
+        for(int i = 0; i < convexhull_R.size();i++){
+            convexhull_R.get(i).print();
+        }
+        System.out.print("All:");
+        for(int i = 0; i < convexhull.size();i++){
+            convexhull.get(i).print();
+        }
         for(int i = 0; i < convexhull.size(); i++){
             for(int j = 0; j < convexhull_L.size(); j++)
                 for(int k = 0; k < convexhull_R.size(); k++)
                     if(!convexhull_L.get(j).The_same(convexhull.get(i)) && !convexhull_R.get(k).The_same(convexhull.get(i))){
                         temp.add(convexhull.get(i));
+                        convexhull.get(i).print();
                     }
         }
+        System.out.println("convexhull size : " + convexhull.size());
         if(mid_point(temp.get(0).a, temp.get(0).b).y > mid_point(temp.get(temp.size()/2+1).a, temp.get(temp.size()/2+1).b).y){
             convexlinetop = new Line(temp.get(0).a, temp.get(0).b);
             convexlinedown = new Line(temp.get(temp.size()/2+1).a, temp.get(temp.size()/2+1).b);
@@ -616,6 +637,8 @@ public class MainForm extends JFrame{
                 temp_PTW = new Point_two_way(S_Left.get(i), S_Left.get(i+1), two_way(S_Left.get(i), S_Left.get(i+1),0));
                 PTW.add(temp_PTW);
             }
+            temp_PTW = new Point_two_way(S_Left.get(0), S_Left.get(S_Left.size()-1), two_way(S_Left.get(0), S_Left.get(S_Left.size()-1),0));
+            PTW.add(temp_PTW);
         }
         if(S_Right.size() <= 2){
             temp_PTW = new Point_two_way(S_Right.get(0), S_Right.get(1), two_way(S_Right.get(0), S_Right.get(1),0));
@@ -626,6 +649,8 @@ public class MainForm extends JFrame{
                 temp_PTW = new Point_two_way(S_Right.get(i), S_Right.get(i+1), two_way(S_Right.get(i), S_Right.get(i+1),0));
                 PTW.add(temp_PTW);
             }
+            temp_PTW = new Point_two_way(S_Right.get(0), S_Right.get(S_Right.size()-1), two_way(S_Right.get(0), S_Right.get(S_Right.size()-1),0));
+            PTW.add(temp_PTW);
         }
         Point prePoint = mid_point(convexlinetop.a, convexlinetop.b);
         Point nextPoint = new Point();
@@ -646,6 +671,7 @@ public class MainForm extends JFrame{
         double tempY;
         double Y;
         while(true) {
+            Point tempPoint = new Point();
             Point inter = new Point();
             double temp_length;
             Point_two_way PTW2 = new Point_two_way();
@@ -669,6 +695,32 @@ public class MainForm extends JFrame{
                     PTW2 = new Point_two_way(PTW.get(i).a, PTW.get(i).b, PTW.get(i).line);
                     draw_line(PTW2.line.a, PTW2.line.b);
                     inter = intersection(PTW2.line, two_way(hyper_line.a, hyper_line.b, 0));
+                    if(!inter.the_same(tempPoint)){
+                        tempPoint = new Point(inter.x, inter.y);
+                        System.out.println("Change success");
+                    }
+                    else if(inter.the_same(tempPoint)){
+                        if (hyper_line.a.the_same(PTW.get(0).a)) {
+                            tempA = new Point(PTW.get(0).b.x, PTW.get(0).b.y);
+                        } else if (hyper_line.a.the_same(PTW.get(0).b)) {
+                            tempA = new Point(PTW.get(0).a.x, PTW.get(0).a.y);
+                        }else if (hyper_line.a.the_same(PTW.get(1).a)){
+                            tempA = new Point(PTW.get(1).b.x, PTW.get(1).b.y);
+                        }else if (hyper_line.a.the_same(PTW.get(1).b)){
+                            tempA = new Point(PTW.get(1).a.x, PTW.get(1).a.y);
+                        }
+                        if (hyper_line.b.the_same(PTW.get(0).a)) {
+                            tempB = new Point(PTW.get(0).b.x, PTW.get(0).b.y);
+                        } else if (hyper_line.b.the_same(PTW.get(0).b)) {
+                            tempB = new Point(PTW.get(0).a.x, PTW.get(0).a.y);
+                        }else if (hyper_line.b.the_same(PTW.get(1).a)){
+                            tempB = new Point(PTW.get(1).b.x, PTW.get(1).b.y);
+                        }else if (hyper_line.b.the_same(PTW.get(1).b)){
+                            tempB = new Point(PTW.get(1).a.x, PTW.get(1).a.y);
+                        }
+                        nextPoint = inter;
+                        break;
+                    }
                     tempY = inter.y;
                     if (Y <= tempY) {
                         if (hyper_line.a.the_same(PTW2.a)) {
@@ -841,7 +893,7 @@ class Line{
         return Math.sqrt(Math.pow(this.a.x - this.b.x,2) + Math.pow(this.a.y - this.b.y,2));
     }
     boolean The_same(Line input){
-        if((this.a.x == input.a.x && this.a.y == input.a.y && this.b.x == input.b.x && this.b.y == input.b.y) || (this.a.x == input.b.x && this.a.y == input.b.y && this.b.x == input.a.x && this.a.y == input.b.y))
+        if((this.a.x == input.a.x && this.a.y == input.a.y && this.b.x == input.b.x && this.b.y == input.b.y) || (this.a.x == input.b.x && this.a.y == input.b.y && this.b.x == input.a.x && this.b.y == input.a.y))
             return true;
         else
             return false;
