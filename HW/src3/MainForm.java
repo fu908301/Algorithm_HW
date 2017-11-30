@@ -31,6 +31,7 @@ public class MainForm extends JFrame{
     private double x,y;
     private Point center;
     private int times = 0;
+    private int step_count = 0;
     private File Load_F;
     private BufferedReader br;
     public MainForm(){
@@ -188,15 +189,64 @@ public class MainForm extends JFrame{
             }
         });
         STEPButton.addActionListener(new ActionListener(){
-            String Line;
-            String[] tempArray= new String[2];
             @Override
             public void actionPerformed(ActionEvent e){
-
+                step_count++;
+                if(step_count == 1){
+                    divid_draw(times, points);
+                }
+                else if(step_count == 2){
+                    draw_convexhull(times,points);
+                }
+                else if(step_count == 3){
+                    for(int i = 0; i < points.size(); i++){
+                        points.get(i).draw_point(panel);
+                    }
+                    divid_conquer(times,points);
+                    step_count = 0;
+                }
             }
         });
     }
-
+    private void divid_draw(int times,ArrayList<Point> tempinput){
+        int left = 0,right = 0;
+        ArrayList<Point> input = divid_sort(tempinput);
+        ArrayList<Point> P_Left = new ArrayList<Point>();
+        ArrayList<Point> P_Right = new ArrayList<Point>();
+        if(times > 3 && times % 2 != 0){
+            left = times / 2 + 1;
+            right = times / 2;
+        }
+        else if(times > 3 && times % 2 == 0){
+            left = times / 2 ;
+            right = times / 2;
+        }
+        for(int i = 0; i < left; i++){
+            P_Left.add(input.get(i));
+        }
+        for(int i = left; i < left + right; i++){
+            P_Right.add(input.get(i));
+        }
+        if(left > 3){
+            divid_conquer(left,P_Left);
+        }
+        if(right > 3){
+            divid_conquer(right,P_Right);
+        }
+        for(int i = 0; i < P_Left.size() - 1; i++){
+            two_way(P_Left.get(i), P_Left.get(i+1), 1);
+        }
+        for(int i = 0; i < P_Right.size() - 1; i++){
+            two_way(P_Right.get(i), P_Right.get(i+1), 1);
+        }
+    }
+    private void draw_convexhull(int times,ArrayList<Point> tempinput){
+        divid_draw(times, tempinput);
+        ArrayList<Line> convex = convex_hull(tempinput);
+        for(int i = 0; i < convex.size(); i++){
+            draw_line(convex.get(i).a, convex.get(i).b);
+        }
+    }
     private void two_way(){
         Point p0 = points.get(0), p1 = points.get(1),pmid = new Point();
         double temp_x,temp_y;
@@ -763,9 +813,8 @@ public class MainForm extends JFrame{
                     PTW2 = new Point_two_way(PTW.get(i).a, PTW.get(i).b, PTW.get(i).line);
                     draw_line(PTW2.line.a, PTW2.line.b);
                     inter = intersection(PTW2.line, two_way(hyper_line.a, hyper_line.b, 0));
-                    if(inter.y < prePoint.y) {
-                        temp_length = length2(prePoint, inter);
-                        if (temp_length <= length) {
+                    temp_length = length2(prePoint, inter);
+                        if (temp_length > 0) {
                             if (hyper_line.a.the_same(PTW2.a)) {
                                 System.out.println("1");
                                 tempA = new Point(PTW.get(i).b.x, PTW2.b.y);
@@ -792,7 +841,7 @@ public class MainForm extends JFrame{
                                 nextPoint = inter;
                             }
                         }
-                    }
+
                 }
                 draw_blue_line(prePoint,nextPoint);
             }
