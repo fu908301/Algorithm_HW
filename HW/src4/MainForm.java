@@ -873,7 +873,17 @@ public class MainForm extends JFrame{
                 L_delete2.add(tempL);
             }
         }
-        if(P_delete.size() >= 4){
+        if(L_delete.get(1).a.x > 1000 || L_delete.get(1).a.x < 0 || L_delete.get(1).a.y > 1000 || L_delete.get(1).a.y < 0){
+            Line tempL = new Line(L_delete.get(1).b, length1(L_delete.get(1).a,L_delete.get(1).b));
+            draw_line(tempL.a, tempL.b);
+        }
+
+        else if(L_delete.get(1).b.x > 1000 || L_delete.get(1).b.x < 0 || L_delete.get(1).b.y > 1000 || L_delete.get(1).b.y < 0){
+            Line tempL = new Line(L_delete.get(1).a, length1(L_delete.get(1).b,L_delete.get(1).a));
+            draw_line(tempL.a, tempL.b);
+        }
+            draw_line(L_delete.get(0).a, L_delete.get(0).b);
+        /*if(P_delete.size() >= 4){
             for(int i = 0; i < P_delete.size() - 2; i++){
                 if(cross(P_delete.get(i), P_delete.get(i+1), P_delete.get(i+2)) > 0){
                     if(cross(P_delete.get(i), P_delete.get(i+1), L_delete2.get(i).a) > 0){
@@ -895,7 +905,7 @@ public class MainForm extends JFrame{
         }
         else {
             draw_red_line(L_delete2.get(0).a,L_delete2.get(0).b);
-        }
+        }*/
     }
 
     Point mid_point(Point a, Point b){
