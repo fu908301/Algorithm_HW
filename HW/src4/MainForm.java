@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class MainForm extends JFrame{
     private JButton NEXTTESTButton;
     private JButton SAVEButton;
     private JButton STEPButton;
+    private JPanel panel2;
     private ArrayList<Point> points = new ArrayList<Point>();
     private ArrayList<Point> mid_points = new ArrayList<Point>();
     private ArrayList<Line> line = new ArrayList<Line>();
@@ -37,10 +39,17 @@ public class MainForm extends JFrame{
     public MainForm(){
         super("TEST");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBounds(700, 700, 700, 700);
+        setBounds(1000, 1000, 1000, 1000);
         getContentPane().add(panel);
-        addMouseListener(m);
         setVisible(true);
+        try {
+            Thread.sleep(1000);
+        } catch(Exception ex) {}
+        Graphics2D g2d = (Graphics2D) panel2.getGraphics();
+        panel2.addMouseListener(m);
+        Shape s = new Rectangle2D.Double(0, 0, 700, 700);
+        g2d.setColor(Color.white);
+        g2d.fill(s);
         Point A = new Point(),B = new Point(),C = new Point();
         button1.addActionListener(new ActionListener() {
             @Override
@@ -59,11 +68,15 @@ public class MainForm extends JFrame{
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.repaint();
+                Graphics2D g2d = (Graphics2D) panel2.getGraphics();
+                Shape s = new Rectangle2D.Double(0, 0, 700, 700);
+                g2d.setColor(Color.white);
+                g2d.fill(s);
                 points.clear();
                 mid_points.clear();
                 line.clear();
                 times = 0;
+                step_count = 0;
             }
         });
         setButton.addActionListener(new ActionListener(){
@@ -73,7 +86,7 @@ public class MainForm extends JFrame{
                 y = (double)Integer.parseInt(textField2.getText());
                 Point p = new Point(x, y);
                 points.add(p);
-                Graphics2D g2d = (Graphics2D) panel.getGraphics();
+                Graphics2D g2d = (Graphics2D) panel2.getGraphics();
                 Shape s = new Ellipse2D.Double(x, y, 10,10);
                 g2d.fill(s);
                 System.out.println(x + " " + y );
@@ -99,7 +112,7 @@ public class MainForm extends JFrame{
                                 x = Double.parseDouble(tempArray[1]);
                                 y = Double.parseDouble(tempArray[2]);
                                 Point P = new Point(x,y);
-                                P.draw_point(panel);
+                                P.draw_point(panel2);
                             }
                             else if(Line.contains("E")){
                                 tempArray = Line.split("\\s");
@@ -121,7 +134,7 @@ public class MainForm extends JFrame{
                                     y = Double.parseDouble(tempArray[1]);
                                     Point p = new Point(x, y);
                                     points.add(p);
-                                    Graphics2D g2d = (Graphics2D) panel.getGraphics();
+                                    Graphics2D g2d = (Graphics2D) panel2.getGraphics();
                                     Shape s = new Ellipse2D.Double(x, y, 10,10);
                                     g2d.fill(s);
                                     System.out.println(x + " " + y );
@@ -175,7 +188,7 @@ public class MainForm extends JFrame{
                                 y = Double.parseDouble(tempArray[1]);
                                 Point p = new Point(x, y);
                                 points.add(p);
-                                Graphics2D g2d = (Graphics2D) panel.getGraphics();
+                                Graphics2D g2d = (Graphics2D) panel2.getGraphics();
                                 Shape s = new Ellipse2D.Double(x, y, 10,10);
                                 g2d.fill(s);
                                 System.out.println(x + " " + y );
@@ -191,22 +204,33 @@ public class MainForm extends JFrame{
         STEPButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
+                r_paint();
+                for(int i = 0; i < points.size(); i++){
+                    points.get(i).draw_point(panel2);
+                }
                 step_count++;
                 if(step_count == 1){
                     divid_draw(times, points);
                 }
                 else if(step_count == 2){
+                    divid_draw(times, points);
                     draw_convexhull(times,points);
                 }
                 else if(step_count == 3){
                     for(int i = 0; i < points.size(); i++){
-                        points.get(i).draw_point(panel);
+                        points.get(i).draw_point(panel2);
                     }
                     divid_conquer(times,points);
                     step_count = 0;
                 }
             }
         });
+    }
+    private void r_paint(){
+        Graphics2D g2d = (Graphics2D) panel2.getGraphics();
+        Shape s = new Rectangle2D.Double(0, 0, 700, 700);
+        g2d.setColor(Color.white);
+        g2d.fill(s);
     }
     private void divid_draw(int times,ArrayList<Point> tempinput){
         int left = 0,right = 0;
@@ -407,7 +431,7 @@ public class MainForm extends JFrame{
             Point p = new Point(x, y);
             points.add(p);
 
-            Graphics2D g2d = (Graphics2D) panel.getGraphics();
+            Graphics2D g2d = (Graphics2D) panel2.getGraphics();
             Shape s = new Ellipse2D.Double(x, y, 8,8);
             g2d.fill(s);
             System.out.println(x + " " + y );
@@ -442,16 +466,16 @@ public class MainForm extends JFrame{
 
 
     private void draw_line(Point p1,Point p2){
-        Graphics2D g2d = (Graphics2D) panel.getGraphics();
+        Graphics2D g2d = (Graphics2D) panel2.getGraphics();
         g2d.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
     }
     private void draw_blue_line(Point p1,Point p2){
-        Graphics2D g2d = (Graphics2D) panel.getGraphics();
+        Graphics2D g2d = (Graphics2D) panel2.getGraphics();
         g2d.setColor(Color.blue);
         g2d.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
     }
     private void draw_red_line(Point p1,Point p2){
-        Graphics2D g2d = (Graphics2D) panel.getGraphics();
+        Graphics2D g2d = (Graphics2D) panel2.getGraphics();
         g2d.setColor(Color.red);
         g2d.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
     }
@@ -776,6 +800,7 @@ public class MainForm extends JFrame{
                         }else if (hyper_line.b.the_same(PTW.get(1).b)){
                             tempB = new Point(PTW.get(1).a.x, PTW.get(1).a.y);
                         }
+                        P_delete.add(inter);
                         nextPoint = inter;
                         L_delete.add(PTW2.line);
                         break;
@@ -859,8 +884,9 @@ public class MainForm extends JFrame{
 
             A = new Point(tempA.x, tempA.y);
             B = new Point(tempB.x, tempB.y);
+            Point tempP = new Point(nextPoint.x, nextPoint.y);
+            P_delete.add(tempP);
             prePoint = nextPoint;
-            P_delete.add(prePoint);
         }
         ArrayList<Line> L_delete2 = new ArrayList<>();
         for(int i = 0; i < L_delete.size(); i++){
@@ -873,16 +899,29 @@ public class MainForm extends JFrame{
                 L_delete2.add(tempL);
             }
         }
-        if(L_delete.get(1).a.x > 1000 || L_delete.get(1).a.x < 0 || L_delete.get(1).a.y > 1000 || L_delete.get(1).a.y < 0){
-            Line tempL = new Line(L_delete.get(1).b, length1(L_delete.get(1).a,L_delete.get(1).b));
-            draw_line(tempL.a, tempL.b);
-        }
+        if(P_delete.size() != 5){
+            if(L_delete.get(1).a.x > 1000 || L_delete.get(1).a.x < 0 || L_delete.get(1).a.y > 1000 || L_delete.get(1).a.y < 0){
+                Line tempL = new Line(L_delete.get(1).b, length1(L_delete.get(1).a,L_delete.get(1).b));
+                draw_line(tempL.a, tempL.b);
+                draw_line(L_delete.get(0).a, L_delete.get(0).b);
+            }
 
-        else if(L_delete.get(1).b.x > 1000 || L_delete.get(1).b.x < 0 || L_delete.get(1).b.y > 1000 || L_delete.get(1).b.y < 0){
-            Line tempL = new Line(L_delete.get(1).a, length1(L_delete.get(1).b,L_delete.get(1).a));
-            draw_line(tempL.a, tempL.b);
+            else if(L_delete.get(1).b.x > 1000 || L_delete.get(1).b.x < 0 || L_delete.get(1).b.y > 1000 || L_delete.get(1).b.y < 0){
+                Line tempL = new Line(L_delete.get(1).a, length1(L_delete.get(1).b,L_delete.get(1).a));
+                draw_line(tempL.a, tempL.b);
+                draw_line(L_delete.get(0).a, L_delete.get(0).b);
+            }
         }
-            draw_line(L_delete.get(0).a, L_delete.get(0).b);
+        else {
+            draw_line(P_delete.get(1), P_delete.get(3));
+            if(P_delete.get(2).x > P_delete.get(1).x){
+                Line tempL = new Line(L_delete.get(1).a, length1(L_delete.get(1).b,L_delete.get(1).a));
+                draw_line(tempL.a, tempL.b);
+            }
+            else if(P_delete.get(2).x < P_delete.get(1).x)
+                draw_line(L_delete.get(0).a, L_delete.get(0).b);
+        }
+        System.out.println(P_delete.size());
         /*if(P_delete.size() >= 4){
             for(int i = 0; i < P_delete.size() - 2; i++){
                 if(cross(P_delete.get(i), P_delete.get(i+1), P_delete.get(i+2)) > 0){
