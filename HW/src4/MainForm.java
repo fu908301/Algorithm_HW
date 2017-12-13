@@ -259,9 +259,11 @@ public class MainForm extends JFrame{
         }
         for(int i = 0; i < P_Left.size() - 1; i++){
             two_way(P_Left.get(i), P_Left.get(i+1), 1);
+            draw_red_line(P_Left.get(i), P_Left.get(i+1));
         }
         for(int i = 0; i < P_Right.size() - 1; i++){
             two_way(P_Right.get(i), P_Right.get(i+1), 1);
+            draw_red_line(P_Right.get(i), P_Right.get(i+1));
         }
     }
     private void draw_convexhull(int times,ArrayList<Point> tempinput){
@@ -676,27 +678,13 @@ public class MainForm extends JFrame{
         ArrayList<Line> convexhull_L = convex_hull(P_Left);
         ArrayList<Line> convexhull_R = convex_hull(P_Right);
         ArrayList<Line> convexhull = convex_hull(P_Left,P_Right);
-        System.out.print("Left:");
-        for(int i = 0; i < convexhull_L.size();i++){
-            convexhull_L.get(i).print();
-        }
-        System.out.print("Right:");
-        for(int i = 0; i < convexhull_R.size();i++){
-            convexhull_R.get(i).print();
-        }
-        System.out.print("All:");
-        for(int i = 0; i < convexhull.size();i++){
-            convexhull.get(i).print();
-        }
         for(int i = 0; i < convexhull.size(); i++){
             for(int j = 0; j < convexhull_L.size(); j++)
                 for(int k = 0; k < convexhull_R.size(); k++)
                     if(!convexhull_L.get(j).The_same(convexhull.get(i)) && !convexhull_R.get(k).The_same(convexhull.get(i))){
                         temp.add(convexhull.get(i));
-                        convexhull.get(i).print();
                     }
         }
-        System.out.println("convexhull size : " + convexhull.size());
         if(mid_point(temp.get(0).a, temp.get(0).b).y > mid_point(temp.get(temp.size()/2+1).a, temp.get(temp.size()/2+1).b).y){
             convexlinetop = new Line(temp.get(0).a, temp.get(0).b);
             convexlinedown = new Line(temp.get(temp.size()/2+1).a, temp.get(temp.size()/2+1).b);
@@ -705,6 +693,8 @@ public class MainForm extends JFrame{
             convexlinetop = new Line(temp.get(temp.size()/2+1).a, temp.get(temp.size()/2+1).b);
             convexlinedown = new Line(temp.get(0).a, temp.get(0).b);
         }
+        draw_red_line(convexlinetop.a, convexlinetop.b);
+        draw_red_line(convexlinedown.a, convexlinedown.b);
         ArrayList<Point_two_way> PTW = new ArrayList<Point_two_way>();
         Point_two_way temp_PTW = new Point_two_way();
         ArrayList <Point> S_Left = Y_sort(P_Left);
