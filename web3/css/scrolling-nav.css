@@ -34,6 +34,43 @@ html {
     background: #fff;
 }
 
-section {
-  padding: 150px 0;
+.spec-section {
+    min-height: 800px;
+    padding-top: 150px;
+    text-align: left;
+    background: #eee;
+}
+.desc-section {
+    min-height: 800px;
+    padding-top: 150px;
+    text-align: left;
+    background: #fff;
+}
+
+.desi-section {
+    min-height: 800px;
+    padding-top: 150px;
+    text-align: left;
+    background: #eee;
+}
+
+.result-section {
+    min-height: 800px;
+    padding-top: 150px;
+    text-align: left;
+    background: #fff;
+}
+
+.conc-section {
+    min-height: 800px;
+    padding-top: 150px;
+    text-align: left;
+    background: #eee;
+}
+
+.appen-section {
+    min-height: 800px;
+    padding-top: 150px;
+    text-align: left;
+    background: #fff;
 }

@@ -36,7 +36,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
+           <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#spec">軟體規格書</a>
             </li>
             <li class="nav-item">
@@ -74,16 +74,33 @@
     <section id="spec">
       <div class="container">
         <div class="row">
-          <div class="col-lg-12">
-		   
+          <div class="col-lg-8 mx-auto">
             <h2>軟體規格書</h2>
-            <p class="lead">This is a great place to talk about your webpage. This template is purposefully unstyled so you can use it as a boilerplate or starting point for you own landing page designs! This template features:</p>
-            <ul>
-              <li>Clickable nav links that smooth scroll to page sections</li>
-              <li>Responsive behavior when clicking nav links perfect for a one page website</li>
-              <li>Bootstrap's scrollspy feature which highlights which section of the page you're on in the navbar</li>
-              <li>Minimal custom CSS so you are free to explore your own unique design options</li>
-            </ul>
+            <h4><strong>輸入規格</strong></h4>
+            <ol>
+              <li>在畫布上用滑鼠任意點擊,顯示點的位置</li>
+              <li>利用鍵盤輸入滑鼠點的位置,並顯示</li>
+              <li>利用檔案輸入點的位置,並顯示</li>
+            </ol>
+			<h4><strong>輸出規格</strong></h4>
+            <ol>
+              <li>直接在畫布上顯示執行結果</li>
+              <li>按下SAVE,輸出「輸出文字檔」</li>
+              <li>輸出文字檔案範例：
+				<div class="panel panel-default">
+					<div class="panel-body">
+						P 100 100<br />
+						P 100 200<br />
+					    P 200 100<br />
+						P 200 200<br />
+					    E 0 150 150 150<br />
+						E 150 0 150 150<br />
+						E 150 150 150 600<br />
+						E 150 150 600 150<br />
+					</div>
+                </div>
+			</li>
+            </ol>
           </div>
         </div>
       </div>
@@ -141,7 +158,6 @@
         </div>
       </div>
     </section>
-
 
     <!-- Footer -->
     <footer class="py-5 bg-dark">
