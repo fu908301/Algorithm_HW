@@ -101,6 +101,26 @@
                 </div>
 			</li>
             </ol>
+			<h4><strong>主介面</strong></h4>
+			<img src="pic/1.PNG" />
+			<h4><strong>功能</strong></h4>
+			<ul>
+				<li>RUN:執行程式</li>
+				<li>STEP:一步一步執行</li>
+				<li>CLEAN:清空畫布</li>
+				<li>LOAD:讀檔</li>
+				<li>NEXT:下一筆測資</li>
+				<li>SAVE:將結果儲存</li>
+				<li>SET:將輸入的XY軸顯示在畫布上</li>
+			</ul>
+			<h4><strong>軟體測試規劃書</strong></h4>
+			以「隨機+共線」的情況，來測試以下幾種點個數的範圍：
+             <ul>
+				<li>1～3 點：三點以下直接解</li>
+                <li>4～6 點：三點以上會 Divide 及 Merge 一次</li>
+                <li>7～12 點：七點以上會 Divide 及 Merge 多次 </li>
+			    <li>大於 12 點：多點測試</li>
+              </ul>
           </div>
         </div>
       </div>
@@ -110,8 +130,24 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h2>Services we offer</h2>
-            <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut optio velit inventore, expedita quo laboriosam possimus ea consequatur vitae, doloribus consequuntur ex. Nemo assumenda laborum vel, labore ut velit dignissimos.</p>
+            <h2>軟體說明</h2>
+			<h4><strong>安裝說明</strong></h4>
+			下載主程式後，執行HW.jar即可
+            <h4><strong>繪製點座標</strong></h4>
+			在白色區域繪製點座標，有以下幾種方法
+			<ul>
+				<li>滑鼠點擊畫布區域</li>
+                <li>利用LOAD讀取測資</li>
+                <li>在文字輸入格內輸入點座標，並且按下SET按鈕 </li>
+             </ul>
+			 <img src="pic/2.PNG" />
+			 <h4><strong>繪製Voronoi Diagram</strong></h4>
+			 <ul>
+				<li>按下RUN，直接繪製最終結果</li>
+                <li>按下STEP，一步一步繪製結果</li>
+             </ul>
+			 <img src="pic/1.PNG" />
+			 <img src="pic/3.PNG" />
           </div>
         </div>
       </div>
@@ -121,8 +157,33 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h2>Contact us</h2>
-            <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero odio fugiat voluptatem dolor, provident officiis, id iusto! Obcaecati incidunt, qui nihil beatae magnam et repudiandae ipsa exercitationem, in, quo totam.</p>
+            <h2>程式設計</h2>
+            <h4><strong>資料結構</strong></h4>
+			資料結構的部分我使用了以下三個資料結構:
+			<ol>
+				<li>
+					Point:儲存點的資料結構
+						<pre>
+double x;//儲存該點的x座標
+double y;//儲存該點的y座標
+						</pre>
+				</li>
+				<li>
+					Line:儲存線段的資料結構
+					<pre>
+Point a;//儲存線段的第一個點
+Point b;//儲存線段的第二個點
+					</pre>
+				</li>
+				<li>
+					Point_Two_Way:儲存兩點以及這兩點的中垂線
+					<pre>
+Point a;//第一個點
+Point b;//第二個點
+Line line;//儲存ab兩點的中垂線
+					</pre>
+				</li>
+			</ol>
           </div>
         </div>
       </div>
