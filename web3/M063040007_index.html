@@ -75,7 +75,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h2>軟體規格書</h2>
+            <h2>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;軟體規格書</h2>
             <h4><strong>輸入規格</strong></h4>
             <ol>
               <li>在畫布上用滑鼠任意點擊,顯示點的位置</li>
@@ -130,7 +130,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h2>軟體說明</h2>
+            <h2>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;軟體說明</h2>
 			<h4><strong>安裝說明</strong></h4>
 			下載主程式後，執行HW.jar即可
             <h4><strong>繪製點座標</strong></h4>
@@ -157,7 +157,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h2>程式設計</h2>
+            <h2>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;程式設計</h2>
             <h4><strong>資料結構</strong></h4>
 			資料結構的部分我使用了以下三個資料結構:
 			<ol>
@@ -184,6 +184,45 @@ Line line;//儲存ab兩點的中垂線
 					</pre>
 				</li>
 			</ol>
+			<h4><strong>三點解法</strong></h4>
+				我一開始的作法是先求出外心座標，然後讓外心座標與三點的中點相連，最後靠著這個向量延伸出去，但是發現三角形的形狀如果是直角三角形或者鈍角三角形，此方法會有問題，於是後來想到有外積這個東西，先利用外積，將三個點逆時針排列，再來利用公式可以求出任兩點向外的法向量，最後讓這個法向量從外心直接延伸出去即可。
+				<img src="pic/4.png"/>
+			<h4><strong>四點以上解法</strong></h4>
+			<h5>演算法過程:</h5>
+			<ol>
+				<li>將點按照X軸排序之後，分成左右兩邊。</li>
+				<li>分別求出Voronoi Diagram。</li>
+				<li>找出convexhull的上下切線。</li>
+				<li>將兩邊的Voronoi Diagram merge 起來。</li>
+				<li>將多餘的線段消除</li>
+			</ol>
+			</br>
+			<h5><strong>切割:</strong></h5>
+			切割就是先將點依照X軸做排序之後再照Y軸排序，然後分成兩邊用ArrayList做儲存的動作。
+			</br>
+			<img src="pic/5.PNG">
+			</br>
+			<h5><strong>分別求Voronoi Diagram:</strong></h5>
+			就是做完切割之後，分別求出Convex hull以及Voronoi Diagram，如下圖，紅色的是Convexhull，黑色的是Voronoi Diagram。
+			<img src="pic/6.PNG">
+			</br>
+			<h5><strong>找出convex hull的上下切線:</strong></h5>
+			&emsp; 求出全部點的Convex Hull，找出橫跨左右兩部分的邊，即為上下切線。
+			<h5>Merge:</h5>
+			<img src="pic/7.PNG">
+			<br/>
+			&emsp; 先從convex hull的上切線當掃描線，以掃描線的法向量當作向量開始往下畫，碰到別的線段之後暫停(藍色為Hyper Plane，紅色為掃描線)。
+			<img src="pic/8.PNG">
+			<br/>
+			&emsp; 接著因為碰到的是左邊的線段，所以左邊下面那個點當作新的掃描線其中一點，右邊的維持不變，然後新的掃描線的法向量繼續往下畫。
+			<img src="pic/9.PNG">
+			<br/>
+			&emsp; 接著碰到右邊的線段，右邊下面那個點當作新的掃描線其中一點，左邊維持不變，此時發現線段為convex hull的下切線，於是無限延伸出去，Merge結束。
+			</br>
+			<h5><strong>銷線</strong></h5>
+			<img src="pic/11.PNG">
+			</br>
+			&emsp;我是以Hyper plane碰到Voronoi Diagram之後，依照轉彎的方向去判斷，如上圖，AB線段與AE線段是逆時針轉，於是我們要刪除同樣逆時針旋轉的線段，以上圖來看，因為AB與AD是逆時針旋轉，所以我們要刪掉AD線段；假設AB與AE線段是順時針轉，我們就是要刪掉順時針旋轉的那個線段。 
           </div>
         </div>
       </div>
@@ -193,8 +232,8 @@ Line line;//儲存ab兩點的中垂線
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <h2>Contact us</h2>
-            <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero odio fugiat voluptatem dolor, provident officiis, id iusto! Obcaecati incidunt, qui nihil beatae magnam et repudiandae ipsa exercitationem, in, quo totam.</p>
+            <h2>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;軟體測試與實驗結果</h2>
+            
           </div>
         </div>
       </div>
